@@ -1,0 +1,61 @@
+         TITLE 'MPMCQ SAM64 copy helpers (31-bit buffers <-> 64-bit payload)'
+         COPY  'src/reg_equates.inc'
+***********************************************************************
+*  MPMCQ_COPY64.MAC
+*
+*  Copy helpers used by QENQ/QDEQ to move variable-length data between:
+*  - 31-bit caller buffers (AMODE 31 addressability)
+*  - 64-bit virtual storage payload buffers (IARV64)
+*
+*  Implementation approach:
+*  - Switch to 64-bit addressing mode briefly using SAM64/SAM31.
+*  - Use MVCL with register pairs.
+*
+*  Register conventions for macros below:
+*  - Destination pair: &RDST / &RDST+1  (address / length)
+*  - Source pair:      &RSRC / &RSRC+1  (address / length)
+*
+*  Notes:
+*  - Caller must ensure upper bits of any 31-bit addresses are zero.
+*  - MVCL will pad with X'00' if source shorter than destination; we always
+*    set both lengths to the same value to avoid padding effects.
+***********************************************************************
+
+         MACRO
+&LBL     MPMCQ_COPY_31_TO_64 &SRC31,&DST64,&LEN,&RDST,&RSRC,&RWORK
+* Copy LEN bytes from 31-bit SRC31 to 64-bit DST64.
+* Inputs:
+*  - &SRC31 : register containing 31-bit source address (upper cleared)
+*  - &DST64 : even reg containing 64-bit destination address
+*  - &LEN   : register containing length (fullword, <=2G-1)
+* Clobbers:
+*  - &RDST/&RDST+1, &RSRC/&RSRC+1, &RWORK
+&LBL.    LR    &RDST,&DST64
+         LR    &RDST+1,&LEN
+         LR    &RSRC,&SRC31
+         LR    &RSRC+1,&LEN
+         SAM64
+         MVCL  &RDST,&RSRC
+         SAM31
+         MEND
+
+         MACRO
+&LBL     MPMCQ_COPY_64_TO_31 &SRC64,&DST31,&LEN,&RDST,&RSRC,&RWORK
+* Copy LEN bytes from 64-bit SRC64 to 31-bit DST31.
+* Inputs:
+*  - &SRC64 : even reg containing 64-bit source address
+*  - &DST31 : register containing 31-bit destination address (upper cleared)
+*  - &LEN   : register containing length (fullword, <=2G-1)
+* Clobbers:
+*  - &RDST/&RDST+1, &RSRC/&RSRC+1, &RWORK
+&LBL.    LR    &RDST,&DST31
+         LR    &RDST+1,&LEN
+         LR    &RSRC,&SRC64
+         LR    &RSRC+1,&LEN
+         SAM64
+         MVCL  &RDST,&RSRC
+         SAM31
+         MEND
+
+         MEND
+

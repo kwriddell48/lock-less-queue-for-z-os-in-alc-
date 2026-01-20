@@ -1,0 +1,122 @@
+         TITLE 'MPMCQ atomic helper macros (CS/CDS retry loops)'
+         COPY  'src/reg_equates.inc'
+***********************************************************************
+*  MPMCQ_ATOMICS.MAC
+*
+*  Small macro helpers for common lock-free primitives:
+*  - CAS on fullword via CS
+*  - CAS on doubleword via CDS (counted pointer updates, 64-bit counters)
+*
+*  Notes:
+*  - `CDS` uses even/odd register pairs for compare operand (Rcmp/Rcmp+1)
+*    and store operand (Rnew/Rnew+1). Both must be even registers.
+***********************************************************************
+
+         MACRO
+&LBL     MPMCQ_CS &Rexp,&Rnew,&ADDR
+&LBL.    CS   &Rexp,&Rnew,&ADDR
+         MEND
+
+         MACRO
+&LBL     MPMCQ_CSLOOP &Rtmp,&Raddr,&DELTA,&DONE
+* Atomic add DELTA (signed fullword) to fullword at (Raddr)
+* Uses: Rtmp as expected/old, R0 as scratch ok
+&LBL.    L    &Rtmp,0(&Raddr)
+         LR   R0,&Rtmp
+         A    R0,&DELTA
+         CS   &Rtmp,R0,0(&Raddr)
+         BNE  &LBL.
+         B    &DONE
+         MEND
+
+         MACRO
+&LBL     MPMCQ_STATINC &QCB,&FIELD,&Rold,&Rnew
+* Increment a fullword stat in the QCB (approx but atomic)
+&LBL.    L    &Rold,&FIELD(&QCB)
+         LA   &Rnew,1(&Rold)
+         CS   &Rold,&Rnew,&FIELD(&QCB)
+         BNE  &LBL.
+         MEND
+
+         MACRO
+&LBL     MPMCQ_STATMAX &QCB,&MAXFIELD,&CANDREG,&Rold,&Rnew
+* Update MAXFIELD=max(MAXFIELD, CANDREG) using CS loop.
+&LBL.    L    &Rold,&MAXFIELD(&QCB)
+         CR   &CANDREG,&Rold
+         BNH  &LBL.EXIT
+         LR   &Rnew,&CANDREG
+         CS   &Rold,&Rnew,&MAXFIELD(&QCB)
+         BNE  &LBL.
+&LBL.EXIT EQU  *
+         MEND
+
+         MACRO
+&LBL     MPMCQ_CAS_DW &RCMP,&RNEW,&ADDR
+* Doubleword compare-and-swap.
+* - RCMP must be even reg (pair RCMP/RCMP+1 = expected)
+* - RNEW must be even reg (pair RNEW/RNEW+1 = desired)
+&LBL.    CDS  &RCMP,&RNEW,&ADDR
+         MEND
+
+         MACRO
+&LBL     MPMCQ_STATADD64 &QCB,&HIFLD,&LOFLD,&ADDREG,&Rcmp,&Rnew
+* Atomically add 32-bit ADDREG (unsigned) to a 64-bit counter (HIFLD/LOFLD).
+* This is used for payload byte counters; it retries with CDS.
+* Registers:
+*  - Rcmp even pair holds old (hi/lo)
+*  - Rnew even pair holds new (hi/lo)
+&LBL.    L    &Rcmp,&HIFLD(&QCB)
+         L    &Rcmp+1,&LOFLD(&QCB)
+         LR   &Rnew,&Rcmp
+         LR   &Rnew+1,&Rcmp+1
+         ALR  &Rnew+1,&ADDREG
+         BNC  &LBL.NOCARRY
+         LA   &Rnew,1(&Rnew)
+&LBL.NOCARRY EQU *
+         CDS  &Rcmp,&Rnew,&HIFLD(&QCB)
+         BNE  &LBL.
+         MEND
+
+         MACRO
+&LBL     MPMCQ_STATADD64S &QCB,&HIFLD,&LOFLD,&ADDREG,&Rcmp,&Rnew
+* Atomically add signed 32-bit ADDREG to a 64-bit counter (HIFLD/LOFLD).
+* ADDREG may be positive or negative.
+&LBL.    L    &Rcmp,&HIFLD(&QCB)
+         L    &Rcmp+1,&LOFLD(&QCB)
+         LR   &Rnew,&Rcmp
+         LR   &Rnew+1,&Rcmp+1
+         ALR  &Rnew+1,&ADDREG
+         BNC  &LBL.NOCARRY
+         * If ADDREG is negative, carry indicates borrow; adjust high accordingly.
+         LTR  &ADDREG,&ADDREG
+         BM   &LBL.BORROW
+         LA   &Rnew,1(&Rnew)
+         B    &LBL.NOCARRY
+&LBL.BORROW EQU *
+         BCTR &Rnew,0
+&LBL.NOCARRY EQU *
+         CDS  &Rcmp,&Rnew,&HIFLD(&QCB)
+         BNE  &LBL.
+         MEND
+
+         MACRO
+&LBL     MPMCQ_STATMAX64 &QCB,&MAXHI,&MAXLO,&CANDHI,&CANDLO,&Rcmp,&Rnew
+* Update 64-bit max if candidate (CANDHI/CANDLO) is greater.
+* Candidate is in registers (CANDHI/CANDLO).
+&LBL.    L    &Rcmp,&MAXHI(&QCB)
+         L    &Rcmp+1,&MAXLO(&QCB)
+         CR   &CANDHI,&Rcmp
+         BH   &LBL.DO
+         BL   &LBL.EXIT
+         CR   &CANDLO,&Rcmp+1
+         BNH  &LBL.EXIT
+&LBL.DO  EQU  *
+         LR   &Rnew,&CANDHI
+         LR   &Rnew+1,&CANDLO
+         CDS  &Rcmp,&Rnew,&MAXHI(&QCB)
+         BNE  &LBL.
+&LBL.EXIT EQU  *
+         MEND
+
+         MEND
+

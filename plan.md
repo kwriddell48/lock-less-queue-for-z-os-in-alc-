@@ -104,7 +104,7 @@ Counters are suggested as **fullword** unless noted.
 
 ## Entry points
 
-- `QINIT(QCBaddr, options, initialPool, CB_EP, CB_CTX, USER_ECB)`
+- `QINIT(QCBaddr, options, CB_EP, CB_CTX, USER_ECB)`
 - `QENQ(QCBaddr, srcAddr, srcLen)`
 - `QDEQ(QCBaddr, dstAddr, dstMaxLen, outLenAddr)`
 - `QSTATS(QCBaddr, outStatsAddr, outStatsLen)`

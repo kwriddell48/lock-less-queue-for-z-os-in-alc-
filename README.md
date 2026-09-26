@@ -6,8 +6,9 @@ It is designed to meet these requirements:
 
 - **Callable from AMODE 31** callers (standard z/OS linkage).
 - **Variable-length records** are **copied into the queue** at enqueue time.
-- Queue stores record bytes in **64-bit virtual storage** (obtained/freed with `IARV64`).
+- Queue stores record bytes in **31-bit storage by default**, with an **optional 64-bit virtual storage mode** (via `IARV64`).
 - `QDEQ` **copies out** to caller buffer and returns actual length; truncation is supported.
+- **Multiple queues per program**: each queue is an **instance** anchored by a distinct **QCB** (allocate one QCB per queue).
 - **Asynchronous notification** on enqueue:
   - A single **ATTACH**ed notifier TCB calls a user exit asynchronously.
   - A user-supplied **ECB** may also be **POST**ed on each enqueue.
@@ -16,10 +17,11 @@ It is designed to meet these requirements:
 
 ## Entry points (planned)
 
-- `QINIT(QCBaddr, options, initialPool, CB_EP, CB_CTX, USER_ECB)`
+- `QINIT(QCBaddr, options, CB_EP, CB_CTX, USER_ECB)`
 - `QENQ(QCBaddr, srcAddr, srcLen)`
 - `QDEQ(QCBaddr, dstAddr, dstMaxLen, outLenAddr)`
 - `QSTATS(QCBaddr, outStatsAddr, outStatsLen)`
+- `GETVERSION(outAddr, outMaxLen, outActLenAddr)` (returns assemble-time stamped build string)
 - `QCBSTOP(QCBaddr)` (optional): stop notifier TCB.
 
 Return codes:
@@ -30,6 +32,7 @@ Return codes:
 ## Source layout
 
 - `src/mpmcq_dsects.inc`: DSECTs for QCB, node, stats, parm lists.
+- `src/mpmcq_api.inc`: single include for callers (entry points + sizes + DSECTs).
 - `src/mpmcq_atomics.mac`: `CS`/`CDS` retry-loop macros.
 - `src/mpmcq_copy64.mac`: `SAM64`/`SAM31` wrapped copy helpers (31<->64).
 - `src/mpmcq_storage.asm`: wrappers for `IARV64` obtain/free (payload) and 31-bit node storage.
@@ -65,6 +68,7 @@ Included counters:
 - `ENQ_OK`, `DEQ_OK`, `DEQ_EMPTY`, `ENQ_ALLOC_FAIL`
 - `ENQ_RETRY`, `DEQ_RETRY`
 - `QDEPTH_CUR`, `QDEPTH_MAX` (best-effort)
+- `PAYLOAD31_CUR`, `PAYLOAD31_MAX` (bytes in 31-bit storage)
 - `PAYLOAD64_CUR`, `PAYLOAD64_MAX` (bytes in 64-bit storage)
 - `POST_INTERNAL`, `POST_USERECB`, `CB_CALLS`, `CB_PENDING_MAX`
 

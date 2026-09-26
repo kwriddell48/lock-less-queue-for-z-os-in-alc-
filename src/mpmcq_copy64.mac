@@ -1,5 +1,4 @@
          TITLE 'MPMCQ SAM64 copy helpers (31-bit buffers <-> 64-bit payload)'
-         COPY  'src/reg_equates.inc'
 ***********************************************************************
 *  MPMCQ_COPY64.MAC
 *
@@ -30,9 +29,13 @@
 *  - &LEN   : register containing length (fullword, <=2G-1)
 * Clobbers:
 *  - &RDST/&RDST+1, &RSRC/&RSRC+1, &RWORK
-&LBL.    LR    &RDST,&DST64
+&L       SETC  '&LBL'
+         AIF   ('&LBL' NE '').C3164_HAVE
+&L       SETC  'C3&SYSNDX'                 * <=8 chars
+.C3164_HAVE ANOP
+&L.      LGR   &RDST,&DST64
          LR    &RDST+1,&LEN
-         LR    &RSRC,&SRC31
+         LLGTR &RSRC,&SRC31
          LR    &RSRC+1,&LEN
          SAM64
          MVCL  &RDST,&RSRC
@@ -48,14 +51,18 @@
 *  - &LEN   : register containing length (fullword, <=2G-1)
 * Clobbers:
 *  - &RDST/&RDST+1, &RSRC/&RSRC+1, &RWORK
-&LBL.    LR    &RDST,&DST31
+&L       SETC  '&LBL'
+         AIF   ('&LBL' NE '').C6431_HAVE
+&L       SETC  'C6&SYSNDX'                 * <=8 chars
+.C6431_HAVE ANOP
+&L.      LLGTR &RDST,&DST31
          LR    &RDST+1,&LEN
-         LR    &RSRC,&SRC64
+         LGR   &RSRC,&SRC64
          LR    &RSRC+1,&LEN
          SAM64
          MVCL  &RDST,&RSRC
          SAM31
          MEND
 
-         MEND
+* (end of file)
 

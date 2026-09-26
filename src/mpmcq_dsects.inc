@@ -15,6 +15,14 @@ MPMCQ_EQUATES          EQU   *
 MPMCQ_STATS_VERSION    EQU   1
 
 ***********************************************************************
+* QINIT option bits (QINIT_OPTIONS fullword)
+***********************************************************************
+MPMCQ_OPT_PAYLOAD31    EQU   X'00000000'  * default: payload allocated below 2G (cell pools; slab GETMAIN RC,LOC=ANY)
+MPMCQ_OPT_PAYLOAD64    EQU   X'00000001'  * payload allocated in 64-bit storage (IARV64)
+MPMCQ_MAX_REC_LEN      EQU   16777215        * MVCL length limit (24 bits): 16MB-1
+MPMCQ_MAX_REC31_LEN    EQU   16384           * payload31 max (largest pool tier); avoids cross-task FREEMAIN
+
+***********************************************************************
 * Queue Control Block (QCB)
 ***********************************************************************
 MPMCQ_QCB              DSECT
@@ -23,35 +31,59 @@ QCB_NAME               DS    CL16              user-assigned queue name
 QCB_VERSION            DS    F                 version
 QCB_FLAGS              DS    F                 runtime flags
 
-* Ensure counted pointers are doubleword aligned for CDS.
-QCB_ALIGN0             DS    0D
-
-* Tagged pointer: (ABA32, PTR31)
-* ABA is a monotonic tag used to reduce ABA effects when pointers are updated.
-QCB_HEAD_ABA           DS    F                 ABA tag
-QCB_HEAD_PTR           DS    F                 ptr to head node (31-bit)
-QCB_TAIL_ABA           DS    F                 ABA tag
-QCB_TAIL_PTR           DS    F                 ptr to tail node (31-bit)
-
-* Optional node freelist head (tagged pointer)
-QCB_FREE_ABA           DS    F                 ABA tag
-QCB_FREE_PTR           DS    F                 ptr to free node
-
-* Async callback fields
+* Async callback configuration (read-only after QINIT)
 QCB_CB_EP              DS    F                 callback entry point (AMODE 31)
 QCB_CB_CTX             DS    F                 user context pointer (31-bit)
 QCB_USER_ECB           DS    F                 optional user ECB to POST per ENQ
+QCB_OWNER_TCB          DS    F                 owner TCB addr (captured at QINIT)
+QCB_OWNER_TTOKEN       DS    CL16              jobstep TTOKEN (IARV64 ownership)
 
-* Internal notifier support
+***********************************************************************
+* QCB layout (cache-line separation + CDS alignment)
+*
+* Hot fields are placed on separate 256-byte groups using ORG so they
+* naturally fall on different cache lines and so all (ABA,PTR) pairs are
+* 8-byte aligned for CDS.
+*
+* NOTE: this guarantees pair alignment and intended cache geometry when the
+* QCB base address itself is 256-byte aligned (QINIT enforces this).
+***********************************************************************
+
+         ORG   MPMCQ_QCB+256
+QCB_HEAD_ABA           DS    F                 ABA tag
+QCB_HEAD_PTR           DS    F                 ptr to head node (31-bit)
+
+         ORG   MPMCQ_QCB+512
+QCB_TAIL_ABA           DS    F                 ABA tag
+QCB_TAIL_PTR           DS    F                 ptr to tail node (31-bit)
+
+         ORG   MPMCQ_QCB+768
+QCB_FREE_ABA           DS    F                 ABA tag (node pool head)
+QCB_FREE_PTR           DS    F                 ptr to free node
+
+         ORG   MPMCQ_QCB+1024
+QCB_PAY256_ABA         DS    F                 ABA tag (payload<=256 pool head)
+QCB_PAY256_PTR         DS    F                 ptr to 256-byte payload cell
+QCB_PAY1024_ABA        DS    F                 ABA tag (payload<=1024 pool head)
+QCB_PAY1024_PTR        DS    F                 ptr to 1024-byte payload cell
+QCB_PAY4096_ABA        DS    F                 ABA tag (payload<=4096 pool head)
+QCB_PAY4096_PTR        DS    F                 ptr to 4096-byte payload cell
+QCB_PAY16384_ABA       DS    F                 ABA tag (payload<=16384 pool head)
+QCB_PAY16384_PTR       DS    F                 ptr to 16384-byte payload cell
+
+         ORG   MPMCQ_QCB+1280
 QCB_CB_ECB             DS    F                 internal ECB (fullword)
+QCB_TERM_ECB           DS    F                 notifier termination ECB (posted at subtask end)
+QCB_CB_ARMED           DS    F                 notifier armed flag (1=waiting/arming)
 QCB_ENQ_SEQ            DS    F                 enqueue sequence (monotonic)
 QCB_CB_SEQ_SEEN        DS    F                 last processed by notifier
 QCB_CB_TCB             DS    F                 notifier TCB addr (optional)
-QCB_ABA_SEQ            DS    F                 global ABA tag generator (monotonic)
+QCB_ABA_SEQ            DS    F                 reserved (no longer used; tags are old+1)
 
 ***********************************************************************
 * Stats (kept in QCB; returned via QSTATS)
 ***********************************************************************
+         ORG   MPMCQ_QCB+1536
 QCB_STAT_ALIGN         DS    0D
 
 QCB_STAT_ENQ_OK        DS    F
@@ -67,7 +99,15 @@ QCB_STAT_FREELIST_PUSH_RETRY DS F
 QCB_STAT_QDEPTH_CUR    DS    F                 best-effort
 QCB_STAT_QDEPTH_MAX    DS    F
 
-* 64-bit payload byte usage (doubleword, updated via CDS loops)
+* Payload byte usage (doubleword, updated via interlocked add)
+* - PAYLOAD31_*: bytes reserved for payload in 31-bit mode
+*                (size-class cell size; this build rejects payload31 records > 16384)
+* - PAYLOAD64_*: bytes allocated in 64-bit virtual storage (IARV64, 1MB segments)
+QCB_STAT_PAYLOAD31_CUR_HI DS  F
+QCB_STAT_PAYLOAD31_CUR_LO DS  F
+QCB_STAT_PAYLOAD31_MAX_HI DS  F
+QCB_STAT_PAYLOAD31_MAX_LO DS  F
+
 QCB_STAT_PAYLOAD64_CUR_HI DS  F
 QCB_STAT_PAYLOAD64_CUR_LO DS  F
 QCB_STAT_PAYLOAD64_MAX_HI DS  F
@@ -78,6 +118,7 @@ QCB_STAT_POST_USERECB DS   F
 QCB_STAT_CB_CALLS      DS   F
 QCB_STAT_CB_PENDING_MAX DS  F
 
+         ORG   MPMCQ_QCB+1792
 QCB_SIZE               EQU   *-MPMCQ_QCB
 
 ***********************************************************************
@@ -93,6 +134,12 @@ NODE_CNT_EXT           DS    F                 external counters
 * Tagged pointer to next node (ABA, PTR)
 NODE_NEXT_ABA          DS    F
 NODE_NEXT_PTR          DS    F                 ptr31
+
+* Tagged pointer used by freelist (ABA, PTR)
+* Keep this separate from NODE_NEXT_* to avoid interference between queue links
+* and node-pool links.
+NODE_FREE_ABA          DS    F
+NODE_FREE_PTR          DS    F                 ptr31
 
 * Payload in 64-bit storage (address + length)
 NODE_PAYLOAD64         DS    D                 64-bit address
@@ -121,6 +168,9 @@ STATS_FREELIST_PUSH_RETRY DS F
 STATS_QDEPTH_CUR        DS   F
 STATS_QDEPTH_MAX        DS   F
 
+STATS_PAYLOAD31_CUR     DS   D
+STATS_PAYLOAD31_MAX     DS   D
+
 STATS_PAYLOAD64_CUR     DS   D
 STATS_PAYLOAD64_MAX     DS   D
 
@@ -136,11 +186,10 @@ STATS_END               EQU  *
 * Parameter lists (R1 -> parm list)
 ***********************************************************************
 
-* QINIT(QCBaddr, options, initialPool, CB_EP, CB_CTX, USER_ECB)
+* QINIT(QCBaddr, options, CB_EP, CB_CTX, USER_ECB)
 MPMCQ_QINIT_PLIST       DSECT
 QINIT_QCBADDR           DS   F
 QINIT_OPTIONS           DS   F
-QINIT_INITPOOL          DS   F
 QINIT_CB_EP             DS   F
 QINIT_CB_CTX            DS   F
 QINIT_USER_ECB          DS   F
@@ -164,11 +213,20 @@ QST_QCBADDR             DS   F
 QST_OUTADDR             DS   F
 QST_OUTLEN              DS   F
 
+* GETVERSION(outAddr, outMaxLen, outActLenAddr)
+* - If outAddr==0, routine returns R1=ptr to version string, R0=len.
+* - If outAddr!=0, routine copies up to outMaxLen and stores actual length
+*   (full string length) at *outActLenAddr.
+MPMCQ_GETVER_PLIST      DSECT
+GVER_OUTADDR            DS   F
+GVER_OUTMAX             DS   F
+GVER_OUTACTLENADDR      DS   F
+
 * Callback parm list: (CB_CTX, QCBaddr, PendingCount)
 MPMCQ_CB_PLIST          DSECT
 CBP_CTX                 DS   F
 CBP_QCB                 DS   F
 CBP_PENDING             DS   F
 
-         END
+* End of include: src/mpmcq_dsects.inc
 

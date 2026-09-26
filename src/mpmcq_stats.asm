@@ -1,4 +1,5 @@
          TITLE 'MPMCQ - QSTATS snapshot routine'
+*PROCESS GOFF
 ***********************************************************************
 *  MPMCQ_STATS.ASM
 *
@@ -14,6 +15,7 @@
 ***********************************************************************
 
          PRINT GEN
+         ACONTROL OPTABLE(ZS5)
 
          COPY  'src/reg_equates.inc'
          COPY  'src/mpmcq_dsects.inc'
@@ -30,26 +32,27 @@ QSTATS   DS 0H
          LR    R12,R15
          USING MPMCQST,12
 
-         L     R2,QST_QCBADDR(R1)
-         L     R3,QST_OUTADDR(R1)
-         L     R4,QST_OUTLEN(R1)
-         LTR   R2,R2
-         BZ    QST_DONE
-         LTR   R3,R3
-         BZ    QST_DONE
+         USING MPMCQ_QSTATS_PLIST,R1
+         L     R4,QST_OUTLEN
+         LT    Q_R,QST_QCBADDR
+         JZ    QST_DONE
+         LT    R3,QST_OUTADDR
+         JZ    QST_DONE
 
-         USING MPMCQ_QCB,R2
+         USING MPMCQ_QCB,Q_R
          USING MPMCQ_STATS,R3
 
-* Determine how many bytes we can copy
-         LA    R5,STATS_END-MPMCQ_STATS
+* Require a full buffer to avoid overruns (caller can retry with a larger one).
+         LA    R5,STATS_END-MPMCQ_STATS         required size
          CR    R4,R5
-         BNH   QST_LEN_OK
-         LR    R4,R5
+         JNL   QST_LEN_OK
+         LA    R15,8                           RC=8 (buffer too small)
+         J     QST_RET
 QST_LEN_OK DS 0H
 
-         MVC   STATS_VERSION,=F'MPMCQ_STATS_VERSION'
-         ST    4,STATS_SIZE
+         LLILF R0,MPMCQ_STATS_VERSION
+         ST    R0,STATS_VERSION
+         ST    R5,STATS_SIZE
 
 * Copy fullword counters
          L     R0,QCB_STAT_ENQ_OK
@@ -75,7 +78,17 @@ QST_LEN_OK DS 0H
          L     R0,QCB_STAT_QDEPTH_MAX
          ST    R0,STATS_QDEPTH_MAX
 
-* Copy 64-bit counters (hi/lo -> D)
+* Copy 31-bit payload byte counters (hi/lo -> D)
+         L     R0,QCB_STAT_PAYLOAD31_CUR_HI
+         ST    R0,STATS_PAYLOAD31_CUR
+         L     R0,QCB_STAT_PAYLOAD31_CUR_LO
+         ST    R0,STATS_PAYLOAD31_CUR+4
+         L     R0,QCB_STAT_PAYLOAD31_MAX_HI
+         ST    R0,STATS_PAYLOAD31_MAX
+         L     R0,QCB_STAT_PAYLOAD31_MAX_LO
+         ST    R0,STATS_PAYLOAD31_MAX+4
+
+* Copy 64-bit payload byte counters (hi/lo -> D)
          L     R0,QCB_STAT_PAYLOAD64_CUR_HI
          ST    R0,STATS_PAYLOAD64_CUR
          L     R0,QCB_STAT_PAYLOAD64_CUR_LO
@@ -95,8 +108,10 @@ QST_LEN_OK DS 0H
          ST    R0,STATS_CB_PENDING_MAX
 
 QST_DONE DS 0H
-         XR    R15,R15
-         LM    R14,R12,12(R13)
+         XR    R15,R15                         RC=0
+QST_RET  DS 0H
+         L     R14,12(,R13)
+         LM    R2,R12,28(,R13)
          BR    R14
 
          END   MPMCQST

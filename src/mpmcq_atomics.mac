@@ -1,5 +1,4 @@
          TITLE 'MPMCQ atomic helper macros (CS/CDS retry loops)'
-         COPY  'src/reg_equates.inc'
 ***********************************************************************
 *  MPMCQ_ATOMICS.MAC
 *
@@ -14,40 +13,55 @@
 
          MACRO
 &LBL     MPMCQ_CS &Rexp,&Rnew,&ADDR
-&LBL.    CS   &Rexp,&Rnew,&ADDR
+&L       SETC  '&LBL'
+         AIF   ('&LBL' NE '').CS_HAVE
+&L       SETC  'CS&SYSNDX'
+.CS_HAVE ANOP
+&L.      CS   &Rexp,&Rnew,&ADDR
          MEND
 
          MACRO
 &LBL     MPMCQ_CSLOOP &Rtmp,&Raddr,&DELTA,&DONE
 * Atomic add DELTA (signed fullword) to fullword at (Raddr)
 * Uses: Rtmp as expected/old, R0 as scratch ok
-&LBL.    L    &Rtmp,0(&Raddr)
+&L       SETC  '&LBL'
+         AIF   ('&LBL' NE '').CSL_HAVE
+&L       SETC  'CSL&SYSNDX'
+.CSL_HAVE ANOP
+&L.      L    &Rtmp,0(&Raddr)
          LR   R0,&Rtmp
          A    R0,&DELTA
          CS   &Rtmp,R0,0(&Raddr)
-         BNE  &LBL.
-         B    &DONE
+         JNE  &L.
+         J    &DONE
          MEND
 
          MACRO
 &LBL     MPMCQ_STATINC &QCB,&FIELD,&Rold,&Rnew
 * Increment a fullword stat in the QCB (approx but atomic)
-&LBL.    L    &Rold,&FIELD(&QCB)
-         LA   &Rnew,1(&Rold)
-         CS   &Rold,&Rnew,&FIELD(&QCB)
-         BNE  &LBL.
+&L       SETC  '&LBL'
+         AIF   ('&LBL' NE '').SI_HAVE
+&L       SETC  'SI&SYSNDX'
+.SI_HAVE ANOP
+* (ZS5+) Use interlocked storage update instead of a CS retry loop.
+* Note: &Rold/&Rnew are retained in the interface for compatibility but unused.
+&L.      ASI  &FIELD(&QCB),1
          MEND
 
          MACRO
 &LBL     MPMCQ_STATMAX &QCB,&MAXFIELD,&CANDREG,&Rold,&Rnew
 * Update MAXFIELD=max(MAXFIELD, CANDREG) using CS loop.
-&LBL.    L    &Rold,&MAXFIELD(&QCB)
+&L       SETC  '&LBL'
+         AIF   ('&LBL' NE '').SM_HAVE
+&L       SETC  'SM&SYSNDX'
+.SM_HAVE ANOP
+&L.      L    &Rold,&MAXFIELD-MPMCQ_QCB(&QCB)
          CR   &CANDREG,&Rold
-         BNH  &LBL.EXIT
+         JNH  &L.EXIT
          LR   &Rnew,&CANDREG
-         CS   &Rold,&Rnew,&MAXFIELD(&QCB)
-         BNE  &LBL.
-&LBL.EXIT EQU  *
+         CS   &Rold,&Rnew,&MAXFIELD-MPMCQ_QCB(&QCB)
+         JNE  &L.
+&L.EXIT  EQU  *
          MEND
 
          MACRO
@@ -55,68 +69,12 @@
 * Doubleword compare-and-swap.
 * - RCMP must be even reg (pair RCMP/RCMP+1 = expected)
 * - RNEW must be even reg (pair RNEW/RNEW+1 = desired)
-&LBL.    CDS  &RCMP,&RNEW,&ADDR
+&L       SETC  '&LBL'
+         AIF   ('&LBL' NE '').CDS_HAVE
+&L       SETC  'CDS&SYSNDX'
+.CDS_HAVE ANOP
+&L.      CDS  &RCMP,&RNEW,&ADDR
          MEND
 
-         MACRO
-&LBL     MPMCQ_STATADD64 &QCB,&HIFLD,&LOFLD,&ADDREG,&Rcmp,&Rnew
-* Atomically add 32-bit ADDREG (unsigned) to a 64-bit counter (HIFLD/LOFLD).
-* This is used for payload byte counters; it retries with CDS.
-* Registers:
-*  - Rcmp even pair holds old (hi/lo)
-*  - Rnew even pair holds new (hi/lo)
-&LBL.    L    &Rcmp,&HIFLD(&QCB)
-         L    &Rcmp+1,&LOFLD(&QCB)
-         LR   &Rnew,&Rcmp
-         LR   &Rnew+1,&Rcmp+1
-         ALR  &Rnew+1,&ADDREG
-         BNC  &LBL.NOCARRY
-         LA   &Rnew,1(&Rnew)
-&LBL.NOCARRY EQU *
-         CDS  &Rcmp,&Rnew,&HIFLD(&QCB)
-         BNE  &LBL.
-         MEND
-
-         MACRO
-&LBL     MPMCQ_STATADD64S &QCB,&HIFLD,&LOFLD,&ADDREG,&Rcmp,&Rnew
-* Atomically add signed 32-bit ADDREG to a 64-bit counter (HIFLD/LOFLD).
-* ADDREG may be positive or negative.
-&LBL.    L    &Rcmp,&HIFLD(&QCB)
-         L    &Rcmp+1,&LOFLD(&QCB)
-         LR   &Rnew,&Rcmp
-         LR   &Rnew+1,&Rcmp+1
-         ALR  &Rnew+1,&ADDREG
-         BNC  &LBL.NOCARRY
-         * If ADDREG is negative, carry indicates borrow; adjust high accordingly.
-         LTR  &ADDREG,&ADDREG
-         BM   &LBL.BORROW
-         LA   &Rnew,1(&Rnew)
-         B    &LBL.NOCARRY
-&LBL.BORROW EQU *
-         BCTR &Rnew,0
-&LBL.NOCARRY EQU *
-         CDS  &Rcmp,&Rnew,&HIFLD(&QCB)
-         BNE  &LBL.
-         MEND
-
-         MACRO
-&LBL     MPMCQ_STATMAX64 &QCB,&MAXHI,&MAXLO,&CANDHI,&CANDLO,&Rcmp,&Rnew
-* Update 64-bit max if candidate (CANDHI/CANDLO) is greater.
-* Candidate is in registers (CANDHI/CANDLO).
-&LBL.    L    &Rcmp,&MAXHI(&QCB)
-         L    &Rcmp+1,&MAXLO(&QCB)
-         CR   &CANDHI,&Rcmp
-         BH   &LBL.DO
-         BL   &LBL.EXIT
-         CR   &CANDLO,&Rcmp+1
-         BNH  &LBL.EXIT
-&LBL.DO  EQU  *
-         LR   &Rnew,&CANDHI
-         LR   &Rnew+1,&CANDLO
-         CDS  &Rcmp,&Rnew,&MAXHI(&QCB)
-         BNE  &LBL.
-&LBL.EXIT EQU  *
-         MEND
-
-         MEND
+* (end of file)
 

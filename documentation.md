@@ -29,7 +29,8 @@ High-level properties:
 
 - **`src/mpmcq_freelist.asm`**
   - **Internal**: `MPMCQ_POPNODE`, `MPMCQ_PUSHNODE`
-  - Lock-free Treiber stack used as a node pool (reuses old dummy nodes).
+  - Same Treiber stack as the inlined `IN_POPNODE` / `IN_PUSHNODE` in `src/mpmcq.asm`.
+  - The hot path does not call this module. Pop result is `R1`: nonzero is a node, zero means the freelist is empty. `R15` is not a pop return code.
 
 - **`src/mpmcq_storage.asm`**
   - **Internal**: `MPMCQ_PAYGET`, `MPMCQ_PAYFREE`
@@ -42,6 +43,7 @@ High-level properties:
   - **Public**: `QCBSTOP`
   - **Internal**: `MPMCQ_NSTART`, `MPMCQ_NOTIF`
   - Optional notifier TCB that `WAIT`s on an internal ECB and calls a user callback asynchronously.
+  - `IDENTIFY` and `ATTACH` are list/execute form so a `RENT` link does not store into the CSECT.
 
 - **`src/mpmcq_stats.asm`**
   - **Public**: `QSTATS`
@@ -61,7 +63,10 @@ High-level properties:
     - provides size aliases (e.g. `MPMCQ_QCB_LEN`)
 
 - **`src/mpmcq_atomics.mac`**
-  - CS/CDS retry-loop helper macros for atomic counters/max updates.
+  - `ASI` stat increment and `CS` max-update helper macros.
+
+- **`src/mpmcq_internal.inc`**
+  - Implementation-only constants. Not part of the caller API.
 
 - **`src/reg_equates.inc`**
   - Register equates `R0..R15` and role aliases used throughout this project.
@@ -163,17 +168,18 @@ Parameter list DSECTs:
 
 #### `QENQ(QCBaddr, srcAddr, srcLen)`
 
-- Allocates a node (freelist pop else slab grow via `GETMAIN RC,LOC=ANY`).
-- Allocates 64-bit payload storage (`MPMCQ_PAYGET`) and copies in bytes.
-- Links node at tail using `CDS` on `TAIL->NEXT` (linearization point).
-- Posts:
-  - internal `QCB_CB_ECB` (always)
-  - user-provided ECB `QCB_USER_ECB` if non-zero
+- Allocates a node (inlined freelist pop, else a slab `GETMAIN RC,LOC=ANY`).
+- Payload31: copies into a size-class cell (256 / 1K / 4K / 16K).
+- Payload64: allocates with `MPMCQ_PAYGET` and copies with `SAM64` / `MVCL`.
+- Links the node at the tail using `CDS` on `TAIL->NEXT` (linearization point).
+- If a callback was configured, increments `ENQ_SEQ` and `POST`s `QCB_CB_ECB` only while the notifier is armed.
+- `POST`s `QCB_USER_ECB` when that address is nonzero.
 
 Return:
 
 - `R15=0` success
-- `R15=8` allocation failure (payload allocation path)
+- `R15=8` allocation failure
+- `R15=12` record too large for this mode (payload31: above 16384; payload64: above 16MB−1)
 
 #### `QDEQ(QCBaddr, dstAddr, dstMaxLen, outLenAddr)`
 
@@ -227,8 +233,7 @@ All key pointers are stored as `(ABA,PTR)` pairs and updated with `CDS`.
 - New ABA tags are computed as **(old ABA + 1)** on each pointer swing.
 - ABA tags help reduce the classic ABA problem on pointer swings.
 
-Note: reads of `(ABA,PTR)` are done via separate loads in some places; the `CDS`
-validation prevents incorrect swings, but mixed reads can increase retry rates.
+Head, tail, and pool heads are fetched with one `LG` so the `(ABA,PTR)` pair is a single 8-byte snapshot. `CDS` still validates the swing. A failed `CDS` reloads that pair into the even/odd registers.
 
 ---
 
@@ -244,14 +249,15 @@ validation prevents incorrect swings, but mixed reads can increase retry rates.
 
 If `CB_EP != 0` in `QINIT`:
 
-- `MPMCQ_NSTART` ATTACHes a notifier TCB (`MPMCQ_NOTIF`).
-- Producers always `POST ECB=QCB_CB_ECB`.
+- `MPMCQ_NSTART` builds private `IDENTIFY` and `ATTACH` parameter lists and starts one notifier TCB (`MPMCQ_NOTIF`).
+- After `ASI` on `ENQ_SEQ`, the producer executes `BCR 15,0` before reading `QCB_CB_ARMED`. The notifier does the same after storing `ARMED=1` and before reading `ENQ_SEQ`. `ASI` makes the counter update atomic; it does not order that update with a different field.
+- The producer `POST`s `QCB_CB_ECB` only when it wins the clear of `QCB_CB_ARMED`, so a burst costs about one internal `POST`.
 - Notifier:
   - WAITs on `QCB_CB_ECB`
   - computes `PendingCount = ENQ_SEQ - CB_SEQ_SEEN`
-  - calls user callback EP with parm list `(CB_CTX, QCBaddr, PendingCount)`
+  - calls the user callback with `(CB_CTX, QCBaddr, PendingCount)`
 
-This yields “every enqueue” semantics without ATTACH-per-enqueue overhead.
+This reports every enqueue without an `ATTACH` per enqueue. `QCBSTOP` must run on the task that called `QINIT`.
 
 ---
 
@@ -262,13 +268,15 @@ Stats are stored in the QCB (`QCB_STAT_*`) and exposed via `QSTATS`.
 Key counters include:
 
 - Queue activity: `ENQ_OK`, `DEQ_OK`, `DEQ_EMPTY`, `ENQ_ALLOC_FAIL`
-- Retry visibility: `ENQ_RETRY`, `DEQ_RETRY`, freelist retry counters
+- Retry visibility: `ENQ_RETRY`, `DEQ_RETRY`. `FREELIST_POP_RETRY` and `FREELIST_PUSH_RETRY` are in the snapshot layout and stay zero; the inlined freelist does not increment them.
 - Depth: `QDEPTH_CUR`, `QDEPTH_MAX` (best-effort)
 - 31-bit payload bytes: `PAYLOAD31_CUR`, `PAYLOAD31_MAX` (HI/LO -> D)
 - 64-bit payload bytes: `PAYLOAD64_CUR`, `PAYLOAD64_MAX` (HI/LO -> D)
 - Notification: `POST_INTERNAL`, `POST_USERECB`, `CB_CALLS`, `CB_PENDING_MAX`
 
-All are **approximate under concurrency** by design.
+All are **approximate under concurrency** by design. Counter increments use `ASI`. Maximums use a compare and `CS`/`CSG` only when the candidate is larger.
+
+Failed `CDS` retries on the enqueue, dequeue, and node-freelist paths execute `PPA` order 1 (spin-loop hint) with a zero lock address and a zero target CPU. The first attempt does not. `PPA` requires the processor-assist facility. The optional `MPMCQ_ENABLE_BACKOFF` switch (default 0) adds an exponential register spin on the enqueue and dequeue retry paths.
 
 ---
 
@@ -408,8 +416,7 @@ Recommendation:
 2. Add larger 31-bit payload size classes (or a pluggable allocator / oversized-buffer pool) to support `len > 16384` in payload31 mode.
 3. Consider a compile-time option to reduce stats updates if absolute max throughput is required.
 
-Reentrancy note: `src/mpmcq_storage.asm` uses MF=L templates copied into per-call
-work areas to avoid shared writable IARV64 parameter lists.
+Reentrancy: `IARV64`, `TCBTOKEN`, `IDENTIFY`, and `ATTACH` keep `MF=L` templates in the CSECT and copy them into a `GETMAIN` work area before `MF=E`. A `RENT` link must not execute the standard form of those macros.
 
 ---
 
@@ -422,10 +429,8 @@ work areas to avoid shared writable IARV64 parameter lists.
 
 ### Known “review points” (things maintainers should validate)
 
-- **Tagged pointer reads**: ideally read `(ABA,PTR)` pairs consistently; the `CDS`
-  validation prevents incorrect updates, but mixed reads can increase retries.
-- **IARV64 operands**: shops differ (key/guard/attributes). `src/mpmcq_storage.asm`
-  may require operand tuning for your standards.
-- **Notifier ATTACH options**: `src/mpmcq_notify.asm` uses a minimal ATTACH; you
-  may need attributes (TCB key, subtask environment) for your installation.
+- **IARV64 operands**: shops differ (key, guard, attributes). `src/mpmcq_storage.asm` may need operand changes for local standards.
+- **Notifier ATTACH options**: the execute-form `ATTACH` is minimal. Subtask key and environment attributes are installation-specific.
+- **`PPA` order 1** is a hint, not a serialization instruction. The `ENQ_SEQ` / `ARMED` handshake still uses `BCR 15,0`.
+- **Still open**: compile-time optional stats, and pushing or popping freelist nodes in batches instead of one `CDS` per node.
 

@@ -151,7 +151,15 @@ QCB_STAT_POST_USERECB DS   F
 QCB_STAT_CB_CALLS      DS   F
 QCB_STAT_CB_PENDING_MAX DS  F
 
+* Transaction diagnostic block. See src/mpmcq_dsects.inc.
          ORG   MPMCQ_QCB+1792
+QCB_TDB                DS    0D
+QCB_TDB_PFX            DS    XL6
+QCB_TDB_TAC            DS    H
+QCB_TDB_ATIA           DS    D
+QCB_TDB_TAIL           DS    CL240
+
+         ORG   MPMCQ_QCB+2048
 QCB_SIZE               EQU   *-MPMCQ_QCB
 
 ***********************************************************************

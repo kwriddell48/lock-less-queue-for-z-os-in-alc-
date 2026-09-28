@@ -118,7 +118,18 @@ QCB_STAT_POST_USERECB DS   F
 QCB_STAT_CB_CALLS      DS   F
 QCB_STAT_CB_PENDING_MAX DS  F
 
+* Transaction diagnostic block. Own 256-byte group so abort stores do not
+* share a line with HEAD, TAIL, pools, or stats. Hardware writes this only
+* when TBEGIN aborts. One block per queue: overlapping aborts can overwrite
+* it. The condition code, not the TDB, selects the CDS fallback.
          ORG   MPMCQ_QCB+1792
+QCB_TDB                DS    0D
+QCB_TDB_PFX            DS    XL6               bytes 0-5: flags
+QCB_TDB_TAC            DS    H                 bytes 6-7: transaction abort code
+QCB_TDB_ATIA           DS    D                 bytes 8-15: aborted-instruction address
+QCB_TDB_TAIL           DS    CL240             bytes 16-255, including GRs at +128
+
+         ORG   MPMCQ_QCB+2048
 QCB_SIZE               EQU   *-MPMCQ_QCB
 
 ***********************************************************************

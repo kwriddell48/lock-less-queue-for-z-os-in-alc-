@@ -11,6 +11,8 @@
 *  This file implements the queue fast-path:
 *    - Michael-Scott MPMC queue (unbounded linked list)
 *    - Tagged-pointer swings using CDS on (ABA32,PTR31) pairs
+*    - Optional TBEGIN/TEND publish of the tail link or head swing,
+*      with the CDS loops as the abort fallback
 *    - Node reuse via a lock-free freelist (Treiber stack) in src/mpmcq_freelist.asm
 *
 *  Notes:
@@ -29,7 +31,8 @@
 ***********************************************************************
 
          PRINT GEN
-         ACONTROL OPTABLE(ZS5)
+* ZS6 (zEC12): TBEGIN/TEND. The rest of the package remains ZS5.
+         ACONTROL OPTABLE(ZS6)
 
          COPY  'src/reg_equates.inc'
          COPY  'src/mpmcq_dsects.inc'
@@ -43,6 +46,10 @@
 * Default is 0 (lowest latency; highest retry-rate under extreme contention).
 MPMCQ_ENABLE_BACKOFF  EQU  0
 MPMCQ_BACKOFF_MAX     EQU  256              * max spin iterations per retry
+* Unconstrained transaction around the publish only. 0 keeps the CDS path.
+* Payload copy, GETMAIN, POST, and IARV64 stay outside the transaction.
+MPMCQ_ENABLE_TX       EQU  1
+MPMCQ_TX_RETRIES      EQU  3                * transient aborts before CDS fallback
 
 MPMCQ    CSECT
 MPMCQ    AMODE 31
@@ -195,9 +202,10 @@ QINIT_TTKN_DONE DS 0H
          ST    R0,QCB_TERM_ECB
          ST    R0,QCB_CB_ARMED
 
-* Zero stats area (approximate counters; see QSTATS)
-* Length expression must be absolute for XC.
-         XC    QCB_STAT_ENQ_OK(QCB_SIZE-(QCB_STAT_ENQ_OK-MPMCQ_QCB)),QCB_STAT_ENQ_OK
+* Zero stats area (approximate counters; see QSTATS). Stop at the TDB so
+* the XC length stays within 256. The TDB is its own 256-byte group.
+         XC    QCB_STAT_ENQ_OK(QCB_TDB-QCB_STAT_ENQ_OK),QCB_STAT_ENQ_OK
+         XC    QCB_TDB(256),QCB_TDB
 
 * Allocate initial dummy node (in 31-bit storage).
 *
@@ -653,7 +661,50 @@ QENQ_PAYLOAD_DONE DS 0H
          XR    R14,R14                      backoff=0
 .ENQ_BOF_INIT_DONE ANOP
 
-* Enqueue: Michael-Scott algorithm (tagged pointers).
+* Enqueue publish.
+* The node is private and the payload bytes are already in it.
+* When MPMCQ_ENABLE_TX=1, one unconstrained transaction stores both
+* TAIL->NEXT and TAIL. A hardware abort leaves no queue update and falls
+* back to the CDS loop below (that loop also helps a lagging tail).
+* A lagging tail executes TEND with no stores, then the CDS path.
+* ABA tags are still advanced so the fallback and other CPUs stay consistent.
+* I2=X'00FF': no AR or FP updates, all GR pairs restored on abort.
+* QCB_TDB receives the abort code (bytes 6-7) and the aborted-instruction
+* address (bytes 8-15). It is not referenced inside the transaction.
+* R14 is the attempt count. It is restored with the other GRs, then
+* decremented only on the abort path (outside the transaction).
+         AIF   (MPMCQ_ENABLE_TX EQ 0).ENQ_TX_OFF
+         LGHI  R14,MPMCQ_TX_RETRIES
+ENQ_TX_TRY DS 0H
+         TBEGIN QCB_TDB,X'00FF'
+         JNZ   ENQ_TX_ABORT
+         LT    R1,QCB_TAIL_PTR
+         JZ    ENQ_TX_LEAVE
+         L     R0,QCB_TAIL_ABA
+         LR    NODE_R,R1
+         USING MPMCQ_NODE,NODE_R
+         LT    NEXTNODE_R,NODE_NEXT_PTR
+         JNZ   ENQ_TX_LEAVE               lagging tail: commit nothing, CDS helps
+         L     R6,NODE_NEXT_ABA
+         AHIK  R6,R6,1
+         ST    R6,NODE_NEXT_ABA
+         ST    NEWNODE_R,NODE_NEXT_PTR
+         DROP  NODE_R
+         AHIK  R0,R0,1
+         ST    R0,QCB_TAIL_ABA
+         ST    NEWNODE_R,QCB_TAIL_PTR
+         TEND
+         J     ENQ_PUBLISHED
+ENQ_TX_LEAVE DS 0H
+         TEND
+         J     ENQ_LOOP
+ENQ_TX_ABORT DS 0H
+* QCB_TDB_TAC and QCB_TDB_ATIA describe this abort. CC still selects the path.
+         JO    ENQ_LOOP                    CC3: persistent, do not retry TX
+         BCTR  R14,0
+         JNZ   ENQ_TX_TRY
+.ENQ_TX_OFF ANOP
+* Michael-Scott algorithm (tagged pointers).
 * CAS tail->next from (aba,0) to (newAba,new_node), then swing tail forward
 * (helping when tail lags).
 ENQ_LOOP DS 0H
@@ -696,6 +747,7 @@ ENQ_LOOP DS 0H
          LR    R9,NEWNODE_R                desired PTR
          CDS   R0,R8,QCB_TAIL_ABA(Q_R)
 
+ENQ_PUBLISHED DS 0H
 * Update stats for success (approx)
          MPMCQ_STATINC Q_R,QCB_STAT_ENQ_OK,R8,R9
 * depth++ (then update max using the post-increment value)
@@ -859,9 +911,54 @@ DEQ_HELP_TAIL DS 0H
          J     DEQ_RETRY_LOOP
 
 DEQ_HAVE_ELEM DS 0H
+         DROP  NODE_R
+* Publish the head swing in one transaction when the element is already
+* visible (next != 0 and head != tail). TBEGIN/TEND are problem-state
+* instructions; they do not need authorization.
+* Payload length and address are loaded inside the transaction, so those
+* reads commit with the HEAD store. The CDS fallback below reads them
+* before its own swing and relies on the queue invariants instead.
+         AIF   (MPMCQ_ENABLE_TX EQ 0).DEQ_TX_OFF
+         LGHI  R14,MPMCQ_TX_RETRIES
+DEQ_TX_TRY DS 0H
+         TBEGIN QCB_TDB,X'00FF'
+         JNZ   DEQ_TX_ABORT
+         L     R0,QCB_HEAD_PTR
+* R4 still holds the pre-transaction head ABA. Do not reload QCB_HEAD_ABA.
+* Every writer (CDS and this transaction) updates ABA and PTR in one
+* atomic operation, so an unchanged PTR means the ABA is unchanged too.
+         CR    R0,R5
+         JNE   DEQ_TX_LEAVE
+         LR    NODE_R,R5
+         USING MPMCQ_NODE,NODE_R
+         L     NEXTNODE_R,NODE_NEXT_PTR
+         LTR   NEXTNODE_R,NEXTNODE_R
+         JZ    DEQ_TX_LEAVE
+         DROP  NODE_R
+         USING MPMCQ_NODE,NEXTNODE_R
+         L     R9,NODE_PAYLOAD_LEN
+         LG    R8,NODE_PAYLOAD64
+         DROP  NEXTNODE_R
+         AHIK  R0,R4,1
+         ST    R0,QCB_HEAD_ABA
+         ST    NEXTNODE_R,QCB_HEAD_PTR
+         TEND
+         J     DEQ_SWUNG
+DEQ_TX_LEAVE DS 0H
+         TEND
+* Head moved or next disappeared. Bound the retries, then use CDS.
+         BCTR  R14,0
+         JNZ   DEQ_TX_TRY
+         J     DEQ_CDS_SWING
+DEQ_TX_ABORT DS 0H
+* QCB_TDB_TAC (bytes 6-7) and QCB_TDB_ATIA (+8) describe this abort.
+         JO    DEQ_CDS_SWING
+         BCTR  R14,0
+         JNZ   DEQ_TX_TRY
+.DEQ_TX_OFF ANOP
+DEQ_CDS_SWING DS 0H
 * Read payload metadata from the node that will become the new head (NEXTNODE_R).
 * IMPORTANT: read before swinging head.
-         DROP  NODE_R
          USING MPMCQ_NODE,NEXTNODE_R
          L     R9,NODE_PAYLOAD_LEN         actual length
          LG    R8,NODE_PAYLOAD64           payload address (64-bit)
@@ -874,6 +971,7 @@ DEQ_HAVE_ELEM DS 0H
          CDS   R4,R0,QCB_HEAD_ABA(Q_R)
          JNE   DEQ_RETRY_LOOP
 
+DEQ_SWUNG DS 0H
 * Head swing succeeded:
 * - old head node address is R5 (from expected head PTR)
 * - payload address is in R8 (64-bit)

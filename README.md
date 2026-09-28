@@ -1,78 +1,63 @@
 # Lock-free MPMC FIFO queue for z/OS (HLASM)
 
-This repository contains a **multi-producer / multi-consumer, lock-free FIFO queue** written in **IBM z/OS High Level Assembler (HLASM)**.
+Multi-producer / multi-consumer lock-free FIFO queue in IBM z/OS High Level Assembler. Callers are AMODE 31. Each queue is one QCB.
 
-It is designed to meet these requirements:
+Payload bytes are copied into the queue. The default stores them in 31-bit size-class pools (256, 1K, 4K, 16K). Optional 64-bit mode uses `IARV64` memory objects. `QDEQ` copies out to a caller buffer and reports the actual length. Truncation is supported.
 
-- **Callable from AMODE 31** callers (standard z/OS linkage).
-- **Variable-length records** are **copied into the queue** at enqueue time.
-- Queue stores record bytes in **64-bit virtual storage** (obtained/freed with `IARV64`).
-- `QDEQ` **copies out** to caller buffer and returns actual length; truncation is supported.
-- **Asynchronous notification** on enqueue:
-  - A single **ATTACH**ed notifier TCB calls a user exit asynchronously.
-  - A user-supplied **ECB** may also be **POST**ed on each enqueue.
-  - Callback parm list is: `(CB_CTX, QCBaddr, PendingCount)`.
-- **Statistics** are maintained (approximate/low-overhead) and returned via `QSTATS`.
+Design detail is in [documentation.md](documentation.md).
 
-## Entry points (planned)
+## Calling interface
 
-- `QINIT(QCBaddr, options, initialPool, CB_EP, CB_CTX, USER_ECB)`
-- `QENQ(QCBaddr, srcAddr, srcLen)`
-- `QDEQ(QCBaddr, dstAddr, dstMaxLen, outLenAddr)`
-- `QSTATS(QCBaddr, outStatsAddr, outStatsLen)`
-- `QCBSTOP(QCBaddr)` (optional): stop notifier TCB.
+Standard z/OS linkage: `R1` points at the parameter list. Layouts and `EXTRN`s are in `src/mpmcq_api.inc`.
+
+| Entry | Purpose |
+| --- | --- |
+| `QINIT(QCBaddr, options, CB_EP, CB_CTX, USER_ECB)` | Initialize one queue. `QCBaddr` must be 256-byte aligned. |
+| `QENQ(QCBaddr, srcAddr, srcLen)` | Copy a record in. |
+| `QDEQ(QCBaddr, dstAddr, dstMaxLen, outLenAddr)` | Copy a record out. |
+| `QSTATS(QCBaddr, outStatsAddr, outStatsLen)` | Best-effort stats snapshot. |
+| `GETVERSION(outAddr, outMaxLen, outActLenAddr)` | Assemble-time build string (`&SYSDATE` / `&SYSTIME`). |
+| `QCBSTOP(QCBaddr)` | Stop the notifier subtask, if one was started. Call it from the same task as `QINIT`. |
+
+`QINIT` options: `MPMCQ_OPT_PAYLOAD31` (default) or `MPMCQ_OPT_PAYLOAD64`.
 
 Return codes:
 
-- `QENQ`: `RC=0` success, `RC=8` allocation failure.
-- `QDEQ`: `RC=4` empty, `RC=0` success, `RC=8` truncated.
+- `QINIT`: `0` success; `8` payload64 requested but the jobstep TTOKEN could not be obtained; `12` QCB is not 256-byte aligned; `16` payload64 probe (`GETSTOR`/`DETACH`) failed; any other nonzero value is the notifier `IDENTIFY`/`ATTACH` return code.
+- `QENQ`: `0` success; `8` allocation failure; `12` record too large (payload31: longer than 16384; payload64: longer than 16MB−1).
+- `QDEQ`: `4` empty; `0` full copy; `8` truncated (`*outLenAddr` is the actual length).
 
-## Source layout
+## Lifetime
 
-- `src/mpmcq_dsects.inc`: DSECTs for QCB, node, stats, parm lists.
-- `src/mpmcq_atomics.mac`: `CS`/`CDS` retry-loop macros.
-- `src/mpmcq_copy64.mac`: `SAM64`/`SAM31` wrapped copy helpers (31<->64).
-- `src/mpmcq_storage.asm`: wrappers for `IARV64` obtain/free (payload) and 31-bit node storage.
-- `src/mpmcq_notify.asm`: notifier TCB body + callback invocation.
-- `src/mpmcq_stats.asm`: `QSTATS` implementation.
-- `src/mpmcq.asm`: `QINIT/QENQ/QDEQ` core.
-- `jcl/asm_lked.jcl`: sample assemble/link JCL.
+The QCB must stay addressable while any producer, consumer, or notifier can touch it. Node and payload slabs are `GETMAIN`ed when a pool grows and are never `FREEMAIN`ed, including by `QCBSTOP`. The task that called `QINIT` must outlive every task that can still hold a cell from those slabs.
 
-## Notes
+`STORAGE OBTAIN ... TCBADDR=` is not used. That operand is authorized-only. Problem-state callers rely on task lifetime or on subpool sharing (`ATTACH` `SHSPV`/`SHSPL`).
 
-- This code assumes a z/Architecture environment where `CDS` (doubleword compare-and-swap) is available.
-- Statistics are **approximate** under concurrency to keep the queue lock-free and fast.
-- `src/mpmcq_storage.asm` contains `IARV64` macro usage; you may need to adjust the macro operands to match your z/OS level/policy (key, guard pages, etc.).
+## Notification
 
-## Using the async notification
+If `CB_EP` is nonzero, `QINIT` starts one notifier subtask. Producers do not call the exit. They increment `ENQ_SEQ` and `POST` an internal ECB only while the notifier is armed, so a burst is about one `POST`. The notifier calls `(CB_CTX, QCBaddr, PendingCount)`.
 
-- **User callback (async execution)**:
-  - Provide `CB_EP` to `QINIT` to request a notifier subtask.
-  - The notifier subtask `WAIT`s on an internal ECB and calls your exit with:
-    - `(CB_CTX, QCBaddr, PendingCount)`
-  - `PendingCount` is computed from a sequence delta, so multiple enqueues can be coalesced into one callback with `PendingCount > 1`.
+`USER_ECB`, if nonzero, is `POST`ed on every successful enqueue. Posts can coalesce.
 
-- **User ECB (POST)**:
-  - Provide `USER_ECB` to `QINIT`.
-  - Each successful `QENQ` will `POST` that ECB (ECB posts may naturally coalesce if already posted).
+`IDENTIFY` and `ATTACH` use list/execute form (`MF=L` copied into a private work area, then `MF=E`) so the notifier module can be link-edited `RENT`.
 
-## Statistics
+## Source
 
-Call `QSTATS(QCBaddr, outStatsAddr, outStatsLen)` to copy a snapshot (see `src/mpmcq_dsects.inc` `MPMCQ_STATS` DSECT).
+- `src/mpmcq.asm` — `QINIT`, `QENQ`, `QDEQ`, inlined node freelist
+- `src/mpmcq_notify.asm` — `QCBSTOP`, notifier subtask
+- `src/mpmcq_storage.asm` — `IARV64` payload get/free
+- `src/mpmcq_stats.asm` — `QSTATS`
+- `src/mpmcq_version.asm` — `GETVERSION`
+- `src/mpmcq_freelist.asm` — external node freelist (same contract as the inlined copy; hot path does not call it)
+- `src/mpmcq_api.inc` — caller include
+- `src/mpmcq_dsects.inc` — QCB, node, stats, parameter lists
+- `src/mpmcq_atomics.mac`, `src/mpmcq_copy64.mac` — atomic and 31↔64 copy helpers
+- `jcl/asm_lked.jcl` — sample assemble and link
 
-Included counters:
+Minimum architecture for `src/mpmcq.asm` is zEC12 (`ACONTROL OPTABLE(ZS6)`) because the publish path uses `TBEGIN`/`TEND`. The other modules assemble at z196 / ZS5. Link with `RENT`.
 
-- `ENQ_OK`, `DEQ_OK`, `DEQ_EMPTY`, `ENQ_ALLOC_FAIL`
-- `ENQ_RETRY`, `DEQ_RETRY`
-- `QDEPTH_CUR`, `QDEPTH_MAX` (best-effort)
-- `PAYLOAD64_CUR`, `PAYLOAD64_MAX` (bytes in 64-bit storage)
-- `POST_INTERNAL`, `POST_USERECB`, `CB_CALLS`, `CB_PENDING_MAX`
+`TBEGIN`, `TEND`, and `PPA` run in problem state. They do not need APF authorization. Transactional execution must still be enabled (control register 0, bit 8). If that bit is off, `TBEGIN` raises a special-operation exception instead of falling back to compare-and-swap. Set `MPMCQ_ENABLE_TX` to 0 in `src/mpmcq.asm` in that environment.
 
-## Building on z/OS
+The dequeue transaction re-reads the head pointer and keeps the ABA tag from before `TBEGIN`. That tag is still valid when the pointer matches, because every writer updates the tag and the pointer together. The payload length and address are read inside the transaction, so they commit with the head update. On abort, `QCB_TDB` holds the abort code (bytes 6–7) and the aborted-instruction address (bytes 8–15).
 
-Use the sample job in `jcl/asm_lked.jcl` as a starting point:
-
-- Put the `.asm` modules into a source PDS (members named e.g. `MPMCQ`, `MPMCQFL`, `MPMCQSTO`, `MPMCQNT`, `MPMCQST`).
-- Put the `.inc`/`.mac` files where your assembler can `COPY`/`MACRO` them (or inline them per your standards).
-- Assemble each module with `ASMA90`, then link-edit with `HEWL` (RENT recommended).
-
+Failed compare-and-swap retries issue `PPA` order 1 (spin-loop hint). The processor-assist facility must be installed; otherwise `PPA` raises an operation exception.

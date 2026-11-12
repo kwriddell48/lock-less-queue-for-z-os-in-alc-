@@ -1,0 +1,64 @@
+         TITLE 'ATOMICS - LAAL, LAAG, AND CDS HELPERS'
+***********************************************************************
+*  ATOMICS.MAC
+*  COPY REGS FIRST.
+*  +1 AND 64-BIT ADD USE LAAL AND LAAG. NO RETRY LOOP.
+*  MAX STILL USES CS OR CDS. A FAILED CS ALREADY RELOADED THE
+*  COMPARE REGISTER, SO THE LOOP DOES NOT LOAD AGAIN.
+*  64-BIT BYTE COUNTERS ARE ONE DOUBLEWORD. THE ADDEND IS
+*  ZERO-EXTENDED, OR SIGN-EXTENDED FOR STATADD64S.
+*  FIELD-MPMCQ_QCB KEEPS (&QCB) THE BASE.
+*  &LBL IS EMITTED SO A NAME ON THE CALL IS A REAL LABEL.
+***********************************************************************
+         MACRO
+&LBL     MPMCQ_STATINC &QCB,&FIELD,&Rold,&Rnew
+&LBL     DS    0H
+         LHI   &Rnew,1
+         LAAL  &Rold,&Rnew,&FIELD.-MPMCQ_QCB(&QCB)
+         MEND
+*
+         MACRO
+&LBL     MPMCQ_STATMAX &QCB,&MAXF,&CAND,&Rold,&Rnew
+&LBL     DS    0H
+         L     &Rold,&MAXF.-MPMCQ_QCB(&QCB)
+SM&SYSNDX DS   0H
+         CR    &CAND,&Rold
+         BNH   SX&SYSNDX
+         LR    &Rnew,&CAND
+         CS    &Rold,&Rnew,&MAXF.-MPMCQ_QCB(&QCB)
+         BNE   SM&SYSNDX
+SX&SYSNDX DS   0H
+         MEND
+*
+         MACRO
+&LBL     MPMCQ_STATADD64 &QCB,&HIF,&ADD,&RCMP,&RNEW
+&LBL     DS    0H
+         LLGFR &RNEW,&ADD
+         LAAG  &RCMP,&RNEW,&HIF.-MPMCQ_QCB(&QCB)
+         MEND
+*
+         MACRO
+&LBL     MPMCQ_STATADD64S &QCB,&HIF,&ADD,&RCMP,&RNEW
+&LBL     DS    0H
+         LGFR  &RNEW,&ADD
+         LAAG  &RCMP,&RNEW,&HIF.-MPMCQ_QCB(&QCB)
+         MEND
+*
+         MACRO
+&LBL     MPMCQ_STATMAX64 &QCB,&MAXF,&CHI,&CLO,&RCMP,&RNEW
+&LBL     DS    0H
+         L     &RCMP,&MAXF.-MPMCQ_QCB(&QCB)
+         L     &RCMP+1,&MAXF.+4-MPMCQ_QCB(&QCB)
+SF&SYSNDX DS   0H
+         CLR   &CHI,&RCMP
+         BH    SG&SYSNDX
+         BL    SH&SYSNDX
+         CLR   &CLO,&RCMP+1
+         BNH   SH&SYSNDX
+SG&SYSNDX DS   0H
+         LR    &RNEW,&CHI
+         LR    &RNEW+1,&CLO
+         CDS   &RCMP,&RNEW,&MAXF.-MPMCQ_QCB(&QCB)
+         BNE   SF&SYSNDX
+SH&SYSNDX DS   0H
+         MEND

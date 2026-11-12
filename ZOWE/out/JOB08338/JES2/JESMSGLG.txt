@@ -1,0 +1,23 @@
+1                   J E S 2  J O B  L O G  --  S Y S T E M  S 0 W 1  --  N O D E  S V S C J E S 2
+0
+ 15.20.43 JOB08338 ---- TUESDAY,   10 NOV 2026 ----
+ 15.20.43 JOB08338  IRR010I  USERID Z72675   IS ASSIGNED TO THIS JOB.
+ 15.20.45 JOB08338  ICH70001I Z72675   LAST ACCESS AT 15:15:08 ON TUESDAY, NOVEMBER 10, 2026
+ 15.20.45 JOB08338  $HASP373 MPMCQ    STARTED - INIT 1    - CLASS A        - SYS S0W1
+ 15.20.45 JOB08338  -                                      -----TIMINGS (MINS.)------                          -----PAGING COUNTS----
+ 15.20.45 JOB08338  -STEPNAME PROCSTEP    RC   EXCP   CONN       TCB       SRB  CLOCK          SERV  WORKLOAD  PAGE  SWAP   VIO SWAPS
+ 15.20.45 JOB08338  -ASM                  02    213     16       .00       .00     .0            40  BATCH        0     0     0     0
+ 15.20.45 JOB08338  -ASMFL                02    150     10       .00       .00     .0            27  BATCH        0     0     0     0
+ 15.20.46 JOB08338  -ASMSTO               02    304     30       .00       .00     .0            57  BATCH        0     0     0     0
+ 15.20.46 JOB08338  -ASMNT                02    228     20       .00       .00     .0            39  BATCH        0     0     0     0
+ 15.20.47 JOB08338  -ASMST                02    145      9       .00       .00     .0            24  BATCH        0     0     0     0
+ 15.20.47 JOB08338  -LKED                 00    103      2       .00       .00     .0             9  BATCH        0     0     0     0
+ 15.20.47 JOB08338  -MPMCQ    ENDED.  NAME-MPMCQ                TOTAL TCB CPU TIME=      .00 TOTAL ELAPSED TIME=    .0
+ 15.20.47 JOB08338  $HASP395 MPMCQ    ENDED - RC=0002
+0------ JES2 JOB STATISTICS ------
+-  10 NOV 2026 JOB EXECUTION DATE
+-           92 CARDS READ
+-        6,304 SYSOUT PRINT RECORDS
+-            0 SYSOUT PUNCH RECORDS
+-          519 SYSOUT SPOOL KBYTES
+-         0.05 MINUTES EXECUTION TIME

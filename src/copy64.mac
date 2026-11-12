@@ -1,0 +1,30 @@
+         TITLE 'COPY64 - 31/64 MVCL HELPERS'
+***********************************************************************
+*  COPY64.MAC
+*  COPY REGS FIRST.
+*  &RDST AND &RSRC MUST BE EVEN REGISTERS.
+*  &LEN MUST BE <= PAY64_MAX (X'FFFFFF') SO ONE MVCL SUFFICES.
+*  LGR/LLGFR KEEP A 64-BIT IARV64 ADDRESS INTACT ACROSS SAM64.
+*  DO NOT EXPAND THESE INSIDE A TBEGIN TRANSACTION.
+***********************************************************************
+         MACRO
+&LBL     MPMCQ_COPY_31_TO_64 &SRC31,&DST64,&LEN,&RDST,&RSRC,&RWORK
+&LBL     LGR   &RDST,&DST64
+         LLGFR &RDST+1,&LEN
+         LLGFR &RSRC,&SRC31
+         LLGFR &RSRC+1,&LEN
+         SAM64
+         MVCL  &RDST,&RSRC
+         SAM31
+         MEND
+*
+         MACRO
+&LBL     MPMCQ_COPY_64_TO_31 &SRC64,&DST31,&LEN,&RDST,&RSRC,&RWORK
+&LBL     LLGFR &RDST,&DST31
+         LLGFR &RDST+1,&LEN
+         LGR   &RSRC,&SRC64
+         LLGFR &RSRC+1,&LEN
+         SAM64
+         MVCL  &RDST,&RSRC
+         SAM31
+         MEND

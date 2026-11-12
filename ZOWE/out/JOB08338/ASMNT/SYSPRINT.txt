@@ -1,0 +1,924 @@
+»
+                                         High Level Assembler Option Summary                   (PTF UO07449)   Page    1
+                                                                                            HLASM R6.0  2026/11/10 15.20
+  No Overriding ASMAOPT Parameters
+  Overriding Parameters-  OBJECT,NODECK,RENT,GOFF,MACHINE(Z15),LIST
+  Process Statements-     RENT,MACHINE(Z15)
+
+** ASMA434N GOFF/XOBJECT option specified, option LIST(133) will be used
+
+  Options for this Assembly
+                    NOADATA
+                      ALIGN
+                    NOASA
+                      ASCII(00819)
+                      BATCH
+                      CA(LOCAL)
+                      CE(LOCAL)
+                      CODEPAGE(01148)
+                    NOCOMPAT
+                      CU(LOCAL)
+                    NODATAMAP
+                    NODBCS
+3 PARM/OPTION       NODECK
+                      DXREF
+                      EBCDIC(00037)
+                      ESD
+                    NOEXIT
+                      FAIL(NOMSG,NOMNOTE,MAXERRS(500))
+                      FLAG(0,ALIGN,CONT,EXLITW,NOIMPLEN,NOLONGER,NOPAGE0,PUSH,RECORD,RENT,NOSIGNED,NOSUBSTR,NOTRUNC,USING0)
+                    NOFOLD
+3 PARM/OPTION         GOFF(NOADATA)
+                      ILMA
+                    NOINFO
+                      LANGUAGE(EN)
+                    NOLIBMAC
+                      LINECOUNT(60)
+3 PARM/OPTION         LIST(133)
+3 PARM/OPTION         MACHINE(z15,NOLIST)
+                      MXREF(SOURCE)
+3 PARM/OPTION         OBJECT
+3 PARM/OPTION         OPTABLE(Z15,NOLIST)
+                    NOPCONTROL
+                    NOPESTOP
+                    NOPROFILE
+                    NORA2
+3 PARM/OPTION         RENT
+                      RLD
+                      RXREF
+                      SECTALGN(8)
+                      SIZE(MAX)
+                    NOSUPRWARN
+                      SYSPARM()
+                    NOTERM
+                    NOTEST
+                      THREAD
+                    NOTRANSLATE
+                      TYPECHECK(MAGNITUDE,REGISTER,SIGNED)
+»
+                                         High Level Assembler Option Summary                   (PTF UO07449)   Page    2
+                                                                                            HLASM R6.0  2026/11/10 15.20
+                      UNICODE(01200)
+                      USING(NOLIMIT,MAP,WARN(15))
+                    NOWORKFILE
+                      XREF(SHORT,UNREFS)
+
+  No Overriding DD Names
+»
+                                              External Symbol Dictionary                                       Page    3
+Symbol   Type   Id     Address  Length   Owner Id Flags Alias-of                            HLASM R6.0  2026/11/10 15.20
+          SD 00000001
+B_IDRL    ED 00000002                    00000001
+B_PRV     ED 00000003                    00000001
+B_TEXT    ED 00000004 00000000 00000000  00000001   00
+MPMCQNT   SD 00000005
+B_IDRL    ED 00000006                    00000005
+B_PRV     ED 00000007                    00000005
+B_TEXT    ED 00000008 00000000 000002C0  00000005   06
+MPMCQNT   LD 00000009 00000000           00000008   06
+MPMCQ_NSTART
+          LD 0000000A 00000000           00000008   00
+QCBSTOP   LD 0000000B 0000012C           00000008   00
+MPMCQ_NOTIF
+          LD 0000000C 00000164           00000008   00
+»
+                                                                                                               Page    4
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+i                                               1 *PROCESS RENT,MACHINE(Z15)
+         MPMCQNT - NOTIFIER                                                                                    Page    5
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                               3 ***********************************************************************
+                                               4 *  MPMCQNT
+                                               5 *  IDENTIFY HAS NO LIST FORM. THE EP NAME IS A CONSTANT AND THE
+                                               6 *  ENTRY ADDRESS IS IN A REGISTER, SO THE STANDARD FORM IS RENT.
+                                               7 *  ATTACH USES SF=L, COPIED TO A WORK AREA, THEN SF=E.
+                                               8 *  THE SUBTASK PARAMETER WORD CONTAINS THE QCB ADDRESS.
+                                               9 *  PARAM=((R2)) STORES THE QCB ADDRESS. THE HIGH BIT IS CLEARED.
+                                              10 *  EP NAME QNOTIFY IS 7 CHARACTERS.
+                                              11 *  THE NOTIFIER CS-CLEARS THE ECB, THEN READS ENQ_SEQ, AND WAITS
+                                              12 *  ONLY WHEN THE DELTA IS ZERO. PRODUCERS POST AFTER LAAL.
+                                              13 ***********************************************************************
+                                              14          PRINT GEN
+i                                              15          COPY  REGS
+         REGS - REGISTER EQUATES                                                                               Page    6
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                              17=***********************************************************************
+                                              18=*  REGS.INC
+                                              19=*  R0-R15 AND THE OS SAVE-AREA LENGTH.
+                                              20=*  COPY THIS BEFORE ANY OTHER PROJECT MEMBER.
+                                              21=***********************************************************************
+                        00000000              22=R0       EQU   0
+                        00000001              23=R1       EQU   1
+                        00000002              24=R2       EQU   2
+                        00000003              25=R3       EQU   3
+                        00000004              26=R4       EQU   4
+                        00000005              27=R5       EQU   5
+                        00000006              28=R6       EQU   6
+                        00000007              29=R7       EQU   7
+                        00000008              30=R8       EQU   8
+                        00000009              31=R9       EQU   9
+                        0000000A              32=R10      EQU   10
+                        0000000B              33=R11      EQU   11
+                        0000000C              34=R12      EQU   12
+                        0000000D              35=R13      EQU   13
+                        0000000E              36=R14      EQU   14
+                        0000000F              37=R15      EQU   15
+                                              38=* 72-BYTE STANDARD SAVE AREA. MULTIPLE OF 8 FOR GETMAIN R.
+                        00000048              39=SAVL     EQU   72
+i                                              40          COPY  DSECTS
+         DSECTS - QCB, NODE, STATS                                                                             Page    7
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                              42=***********************************************************************
+                                              43=*  DSECTS.INC
+                                              44=*  QCB BASE MUST BE 256-BYTE ALIGNED (QINIT RETURNS 12).
+                                              45=*  HEAD, TAIL, FREE, AND STATS EACH START ON THEIR OWN LINE.
+                                              46=*  EACH (ABA,PTR) PAIR IS 8-BYTE ALIGNED FOR CDS.
+                                              47=*  NODE_CNT_EXT IS THE EMPTY-NEXT GENERATION. IT SURVIVES REUSE.
+                                              48=*  NODE_CNT_INT IS NODE_F_INLINE WHEN THE BYTES SIT IN THE NODE.
+                                              49=*  INLINE BYTES START ON THEIR OWN CACHE LINE (SAVE AREA TOO).
+                                              50=*  QCB_POOL IS SIX 31-BIT SLAB FREELISTS (2K 4K 8K 16K 32K 64K).
+                                              51=*  QCB_TLS POINTS AT A TCB-SLOT TABLE. PSATOLD IS PSA+X'21C'.
+                                              52=*  TLS_STAMP IS THE SLOT'S LAST USE. AGE MATH USES THE SLOT TAIL.
+                                              53=*  QCB_SIZE IS ALSO PUBLISHED IN API.INC AS QCB_SIZE_PUB.
+                                              54=*  COPY DSECTS BEFORE API.
+                                              55=***********************************************************************
+                        0000021C              56=PSATOLD                EQU   X'21C'
+                        00000040              57=TLS_SLOTS              EQU   64
+                        00000100              58=TLS_LINE               EQU   256
+                        00004000              59=TLS_BYTES              EQU   TLS_SLOTS*TLS_LINE
+                        00000008              60=TLS_DEPTH              EQU   8
+                        00000004              61=TLS_FILL               EQU   4
+                        00000000              62=TLS_OWNER              EQU   0
+                        00000004              63=TLS_COUNT              EQU   4
+                        00000008              64=TLS_STAMP              EQU   8
+                        00000010              65=TLS_NODES              EQU   16
+                        0000003F              66=TLS_MASK               EQU   TLS_SLOTS-1
+                        00000006              67=POOL_N                 EQU   6
+                        00000800              68=POOL_2K                EQU   2048
+                        00001000              69=POOL_4K                EQU   4096
+                        00002000              70=POOL_8K                EQU   8192
+                        00004000              71=POOL_16K               EQU   16384
+                        00008000              72=POOL_32K               EQU   32768
+                        00010000              73=POOL_64K               EQU   65536
+                                              74=*
+                        00000001              75=MPMCQ_STATS_VERSION EQU 1
+                                              76=*
+00000000                00000000 00000538     77=MPMCQ_QCB              DSECT
+00000000                                      78=QCB_EYECATCH           DS    CL8
+00000008                                      79=QCB_NAME               DS    CL16
+00000018                                      80=QCB_VERSION            DS    F
+0000001C                                      81=QCB_FLAGS              DS    F
+00000020                                      82=QCB_CB_EP              DS    F
+00000024                                      83=QCB_CB_CTX             DS    F
+00000028                                      84=QCB_USER_ECB           DS    F
+0000002C                                      85=QCB_CB_ECB             DS    F
+00000030                                      86=QCB_ENQ_SEQ            DS    F
+00000034                                      87=QCB_CB_SEQ_SEEN        DS    F
+00000038                                      88=QCB_CB_TCB             DS    F
+0000003C                0000003C 00000100     89=                       ORG   MPMCQ_QCB+256
+00000100                                      90=                       DS    0D
+00000100                                      91=QCB_HEAD_ABA           DS    F
+00000104                                      92=QCB_HEAD_PTR           DS    F
+00000108                00000108 00000200     93=                       ORG   MPMCQ_QCB+512
+00000200                                      94=                       DS    0D
+00000200                                      95=QCB_TAIL_ABA           DS    F
+i00000204                                      96=QCB_TAIL_PTR           DS    F
+         DSECTS - QCB, NODE, STATS                                                                             Page    8
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000208                00000208 00000300     97=                       ORG   MPMCQ_QCB+768
+00000300                                      98=                       DS    0D
+00000300                                      99=QCB_FREE_ABA           DS    F
+00000304                                     100=QCB_FREE_PTR           DS    F
+00000308                00000308 00000400    101=                       ORG   MPMCQ_QCB+1024
+00000400                                     102=QCB_STAT_ENQ_OK        DS    F
+00000404                                     103=QCB_STAT_DEQ_OK        DS    F
+00000408                                     104=QCB_STAT_DEQ_EMPTY     DS    F
+0000040C                                     105=QCB_STAT_ENQ_ALLOC_FAIL DS   F
+00000410                                     106=QCB_STAT_ENQ_RETRY     DS    F
+00000414                                     107=QCB_STAT_DEQ_RETRY     DS    F
+00000418                                     108=QCB_STAT_FREELIST_POP_RETRY DS F
+0000041C                                     109=QCB_STAT_FREELIST_PUSH_RETRY DS F
+00000420                                     110=QCB_STAT_QDEPTH_CUR    DS    F
+00000424                                     111=QCB_STAT_QDEPTH_MAX    DS    F
+00000428                                     112=QCB_STAT_PAYLOAD64_CUR_HI DS F
+0000042C                                     113=QCB_STAT_PAYLOAD64_CUR_LO DS F
+00000430                                     114=QCB_STAT_PAYLOAD64_MAX_HI DS F
+00000434                                     115=QCB_STAT_PAYLOAD64_MAX_LO DS F
+00000438                                     116=QCB_STAT_POST_INTERNAL DS   F
+0000043C                                     117=QCB_STAT_POST_USERECB  DS   F
+00000440                                     118=QCB_STAT_CB_CALLS      DS   F
+00000444                                     119=QCB_STAT_CB_PENDING_MAX DS  F
+00000448                00000448 00000500    120=                       ORG   MPMCQ_QCB+1280
+00000500                                     121=                       DS    0D
+00000500                                     122=QCB_TLS                DS    A
+00000504                                     123=                       DS    F
+00000508                                     124=QCB_POOL               DS    6D
+                        00000538             125=QCB_SIZE               EQU   *-MPMCQ_QCB
+                                             126=*
+00000000                00000000 00000500    127=MPMCQ_NODE             DSECT
+00000000                                     128=                       DS    0D
+00000000                                     129=NODE_CNT_INT           DS    F
+00000004                                     130=NODE_CNT_EXT           DS    F
+00000008                                     131=NODE_NEXT_ABA          DS    F
+0000000C                                     132=NODE_NEXT_PTR          DS    F
+00000010                                     133=NODE_PAYLOAD64         DS    D
+00000018                                     134=NODE_PAYLOAD_LEN       DS    F
+0000001C                                     135=NODE_RSVD              DS    F
+00000020                00000020 00000100    136=                       ORG   MPMCQ_NODE+256
+00000100                                     137=NODE_INLINE            DS    CL1024
+                        00000400             138=NODE_INLINE_MAX        EQU   1024
+                        00000001             139=NODE_F_INLINE          EQU   1
+                        00000500             140=NODE_SIZE              EQU   *-MPMCQ_NODE
+                                             141=*
+00000000                00000000 00000050    142=MPMCQ_STATS            DSECT
+00000000                                     143=STATS_VERSION          DS    F
+00000004                                     144=STATS_SIZE             DS    F
+00000008                                     145=STATS_ENQ_OK           DS    F
+0000000C                                     146=STATS_DEQ_OK           DS    F
+00000010                                     147=STATS_DEQ_EMPTY        DS    F
+00000014                                     148=STATS_ENQ_ALLOC_FAIL   DS    F
+00000018                                     149=STATS_ENQ_RETRY        DS    F
+0000001C                                     150=STATS_DEQ_RETRY        DS    F
+i00000020                                     151=STATS_FREELIST_POP_RETRY DS  F
+         DSECTS - QCB, NODE, STATS                                                                             Page    9
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000024                                     152=STATS_FREELIST_PUSH_RETRY DS F
+00000028                                     153=STATS_QDEPTH_CUR       DS    F
+0000002C                                     154=STATS_QDEPTH_MAX       DS    F
+00000030                                     155=STATS_PAYLOAD64_CUR    DS    D
+00000038                                     156=STATS_PAYLOAD64_MAX    DS    D
+00000040                                     157=STATS_POST_INTERNAL    DS    F
+00000044                                     158=STATS_POST_USERECB     DS    F
+00000048                                     159=STATS_CB_CALLS         DS    F
+0000004C                                     160=STATS_CB_PENDING_MAX   DS    F
+                        00000050             161=STATS_END              EQU   *
+i                                             162          COPY  API
+         API - CALLING CONVENTION                                                                              Page   10
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             164=***********************************************************************
+                                             165=*  API.INC
+                                             166=*  COPY DSECTS FIRST. QCB_SIZE_PUB MUST EQUAL QCB_SIZE.
+                                             167=*  PAY31_MAX IS THE 31-BIT SLAB CAP (POOL_64K). ABOVE IT: IARV64.
+                                             168=*  PAY64_MAX IS ONE MVCL (24-BIT LENGTH).
+                                             169=*  RC_ALIGN (12) MEANS THE QCB IS NOT 256-BYTE ALIGNED.
+                                             170=***********************************************************************
+                        00010000             171=PAY31_MAX EQU   65536
+                        00FFFFFF             172=PAY64_MAX EQU   X'00FFFFFF'
+                        00000100             173=QCB_ALIGN EQU   256
+                        00000000             174=RC_OK     EQU   0
+                        00000004             175=RC_EMPTY  EQU   4
+                        00000008             176=RC_ALLOC  EQU   8
+                        00000008             177=RC_TRUNC  EQU   8
+                        0000000C             178=RC_ALIGN  EQU   12
+                        00000538             179=QCB_SIZE_PUB EQU 1336
+                                             180=         AIF   (PAY31_MAX EQ POOL_64K).APIP31
+                                             181=.APIP31  ANOP
+                        80000000             182=QCBF_STOP EQU   X'80000000'
+                                             183=         AIF   (QCB_SIZE EQ QCB_SIZE_PUB).APIQOK
+                                             184=.APIQOK  ANOP
+                                             185=*
+00000000                00000000 00000018    186=MPMCQ_QINIT_PLIST DSECT
+00000000                                     187=QINIT_QCBADDR     DS    F
+00000004                                     188=QINIT_OPTIONS     DS    F
+00000008                                     189=QINIT_INITPOOL    DS    F
+0000000C                                     190=QINIT_CB_EP       DS    F
+00000010                                     191=QINIT_CB_CTX      DS    F
+00000014                                     192=QINIT_USER_ECB    DS    F
+                                             193=*
+00000000                00000000 0000000C    194=MPMCQ_QENQ_PLIST  DSECT
+00000000                                     195=ENQ_QCBADDR       DS    F
+00000004                                     196=ENQ_SRCADDR       DS    F
+00000008                                     197=ENQ_SRCLEN        DS    F
+                                             198=*
+00000000                00000000 00000010    199=MPMCQ_QDEQ_PLIST  DSECT
+00000000                                     200=DEQ_QCBADDR       DS    F
+00000004                                     201=DEQ_DSTADDR       DS    F
+00000008                                     202=DEQ_DSTMAX        DS    F
+0000000C                                     203=DEQ_OUTLENADDR    DS    F
+                                             204=*
+00000000                00000000 0000000C    205=MPMCQ_QSTATS_PLIST DSECT
+00000000                                     206=QST_QCBADDR       DS    F
+00000004                                     207=QST_OUTADDR       DS    F
+00000008                                     208=QST_OUTLEN        DS    F
+                                             209=*
+00000000                00000000 00000004    210=MPMCQ_STOP_PL     DSECT
+00000000                                     211=QSTOP_QCB         DS    F
+                                             212=*
+00000000                00000000 0000000C    213=MPMCQ_CB_PLIST    DSECT
+00000000                                     214=CBP_CTX           DS    F
+00000004                                     215=CBP_QCB           DS    F
+00000008                                     216=CBP_PENDING       DS    F
+i                                             217          COPY  ATOMICS
+         ATOMICS - LAAL, LAAG, AND CDS HELPERS                                                                 Page   11
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             219=***********************************************************************
+                                             220=*  ATOMICS.MAC
+                                             221=*  COPY REGS FIRST.
+                                             222=*  +1 AND 64-BIT ADD USE LAAL AND LAAG. NO RETRY LOOP.
+                                             223=*  MAX STILL USES CS OR CDS. A FAILED CS ALREADY RELOADED THE
+                                             224=*  COMPARE REGISTER, SO THE LOOP DOES NOT LOAD AGAIN.
+                                             225=*  64-BIT BYTE COUNTERS ARE ONE DOUBLEWORD. THE ADDEND IS
+                                             226=*  ZERO-EXTENDED, OR SIGN-EXTENDED FOR STATADD64S.
+                                             227=*  FIELD-MPMCQ_QCB KEEPS (&QCB) THE BASE.
+                                             228=*  &LBL IS EMITTED SO A NAME ON THE CALL IS A REAL LABEL.
+                                             229=***********************************************************************
+                                             230=         MACRO
+                                             231=&LBL     MPMCQ_STATINC &QCB,&FIELD,&Rold,&Rnew
+                                             232=&LBL     DS    0H
+                                             233=         LHI   &Rnew,1
+                                             234=         LAAL  &Rold,&Rnew,&FIELD.-MPMCQ_QCB(&QCB)
+                                             235=         MEND
+                                             236=*
+                                             237=         MACRO
+                                             238=&LBL     MPMCQ_STATMAX &QCB,&MAXF,&CAND,&Rold,&Rnew
+                                             239=&LBL     DS    0H
+                                             240=         L     &Rold,&MAXF.-MPMCQ_QCB(&QCB)
+                                             241=SM&SYSNDX DS   0H
+                                             242=         CR    &CAND,&Rold
+                                             243=         BNH   SX&SYSNDX
+                                             244=         LR    &Rnew,&CAND
+                                             245=         CS    &Rold,&Rnew,&MAXF.-MPMCQ_QCB(&QCB)
+                                             246=         BNE   SM&SYSNDX
+                                             247=SX&SYSNDX DS   0H
+                                             248=         MEND
+                                             249=*
+                                             250=         MACRO
+                                             251=&LBL     MPMCQ_STATADD64 &QCB,&HIF,&ADD,&RCMP,&RNEW
+                                             252=&LBL     DS    0H
+                                             253=         LLGFR &RNEW,&ADD
+                                             254=         LAAG  &RCMP,&RNEW,&HIF.-MPMCQ_QCB(&QCB)
+                                             255=         MEND
+                                             256=*
+                                             257=         MACRO
+                                             258=&LBL     MPMCQ_STATADD64S &QCB,&HIF,&ADD,&RCMP,&RNEW
+                                             259=&LBL     DS    0H
+                                             260=         LGFR  &RNEW,&ADD
+                                             261=         LAAG  &RCMP,&RNEW,&HIF.-MPMCQ_QCB(&QCB)
+                                             262=         MEND
+                                             263=*
+                                             264=         MACRO
+                                             265=&LBL     MPMCQ_STATMAX64 &QCB,&MAXF,&CHI,&CLO,&RCMP,&RNEW
+                                             266=&LBL     DS    0H
+                                             267=         L     &RCMP,&MAXF.-MPMCQ_QCB(&QCB)
+                                             268=         L     &RCMP+1,&MAXF.+4-MPMCQ_QCB(&QCB)
+                                             269=SF&SYSNDX DS   0H
+                                             270=         CLR   &CHI,&RCMP
+                                             271=         BH    SG&SYSNDX
+                                             272=         BL    SH&SYSNDX
+i                                             273=         CLR   &CLO,&RCMP+1
+         ATOMICS - LAAL, LAAG, AND CDS HELPERS                                                                 Page   12
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             274=         BNH   SH&SYSNDX
+                                             275=SG&SYSNDX DS   0H
+                                             276=         LR    &RNEW,&CHI
+                                             277=         LR    &RNEW+1,&CLO
+                                             278=         CDS   &RCMP,&RNEW,&MAXF.-MPMCQ_QCB(&QCB)
+                                             279=         BNE   SF&SYSNDX
+                                             280=SH&SYSNDX DS   0H
+                                             281=         MEND
+i                                             282          COPY  LINKAGE
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   13
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             284=***********************************************************************
+                                             285=*  LINKAGE.MAC
+                                             286=*  COPY REGS FIRST (SAVL, R0-R15).
+                                             287=*  QLEAF  - SAVE INTO CALLER SAVE AREA. PLIST LEFT IN R11.
+                                             288=*           OPTIONAL &BASE: LARL SETS R12 TO CSECT BASE.
+                                             289=*           WITHOUT &BASE: R12 IS TAKEN FROM R15.
+                                             290=*  QLEAVER- RETURN. R0, R1, AND R15 PRESERVED AS CALLER SET THEM.
+                                             291=*  QLEAVER89 - RETURN R15 PLUS R8/R9 IN BITS 32-63.
+                                             292=*  QENTER - CALLER SAVE AREA CHAINING VIA GETMAIN.
+                                             293=*  QLEAVE - FREEMAIN SAVE AREA AND RETURN R15.
+                                             294=*  QLEAVE89 - FREEMAIN SAVE AREA AND RETURN R15 + R8/R9.
+                                             295=***********************************************************************
+                                             296=         MACRO
+                                             297=&LBL     QLEAF &BASE
+                                             298=&LBL     STM   R14,R12,12(R13)
+                                             299=         LARL  R12,&BASE
+                                             300=         LR    R11,R1
+                                             301=         MEND
+                                             302=*
+                                             303=         MACRO
+                                             304=&LBL     QLEAVER
+                                             305=&LBL     L     R14,12(R13)
+                                             306=         LM    R2,R12,28(R13)
+                                             307=         BR    R14
+                                             308=         MEND
+                                             309=*
+                                             310=         MACRO
+                                             311=&LBL     QLEAVER89
+                                             312=&LBL     L     R14,12(R13)
+                                             313=         LM    R2,R7,28(R13)
+                                             314=         LM    R10,R12,60(R13)
+                                             315=         LLGFR R8,R8
+                                             316=         LLGFR R9,R9
+                                             317=         BR    R14
+                                             318=         MEND
+                                             319=*
+                                             320=         MACRO
+                                             321=&LBL     QENTER &BASE
+                                             322=&LBL     STM   R14,R12,12(R13)
+                                             323=         LARL  R12,&BASE
+                                             324=         LHI   R0,SAVL
+                                             325=         GETMAIN R,LV=(0)
+                                             326=         LR    R10,R1
+                                             327=         XC    0(SAVL,R10),0(R10)
+                                             328=         ST    R13,4(R10)
+                                             329=         ST    R10,8(R13)
+                                             330=         L     R11,24(R13)
+                                             331=         LR    R13,R10
+                                             332=         MEND
+                                             333=*
+                                             334=         MACRO
+                                             335=&LBL     QLEAVE
+                                             336=&LBL     LR    R1,R13
+                                             337=         L     R13,4(R13)
+i                                             338=         ST    R15,16(R13)
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   14
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             339=         LHI   R0,SAVL
+                                             340=         FREEMAIN R,LV=(0),A=(1)
+                                             341=         L     R15,16(R13)
+                                             342=         L     R14,12(R13)
+                                             343=         LM    R2,R12,28(R13)
+                                             344=         BR    R14
+                                             345=         MEND
+                                             346=*
+                                             347=         MACRO
+                                             348=&LBL     QLEAVE89
+                                             349=&LBL     LR    R1,R13
+                                             350=         L     R13,4(R13)
+                                             351=         ST    R15,16(R13)
+                                             352=         LHI   R0,SAVL
+                                             353=         FREEMAIN R,LV=(0),A=(1)
+                                             354=         LM    R2,R7,28(R13)
+                                             355=         LM    R10,R12,60(R13)
+                                             356=         L     R15,16(R13)
+                                             357=         L     R14,12(R13)
+                                             358=         LLGFR R8,R8
+                                             359=         LLGFR R9,R9
+                                             360=         BR    R14
+                                             361=         MEND
+                                             362 *
+00000000                00000000 000002C0    363 MPMCQNT  CSECT
+                                             364 MPMCQNT  AMODE 31
+                                             365 MPMCQNT  RMODE ANY
+                    R:C 00000000             366          USING MPMCQNT,R12
+                    R:2 00000000             367          USING MPMCQ_QCB,R2
+                                             368 *
+                                             369          ENTRY MPMCQ_NSTART
+                                             370          ENTRY QCBSTOP
+                                             371          ENTRY MPMCQ_NOTIF
+                                             372 *
+00000000                                     373 MPMCQ_NSTART DS 0H
+                                             374          QENTER MPMCQNT
+00000000 90EC D00C               0000000C    375+         STM   R14,R12,12(R13)                                          01-00000322
+00000004 C0C0 FFFF FFFE          00000000    376+         LARL  R12,MPMCQNT                                              01-00000323
+0000000A A708 0048                           377+         LHI   R0,SAVL                                                  01-00000324
+0000000E 4510 C012               00000012    380+         BAL   1,*+4                   INDICATE GETMAIN        @Z30EN9G 02-GETMAIN
+00000012 0A0A                                381+         SVC   10                      ISSUE GETMAIN SVC                02-GETMAIN
+00000014 18A1                                382+         LR    R10,R1                                                   01-00000326
+00000016 D747 A000 A000 00000000 00000000    383+         XC    0(SAVL,R10),0(R10)                                       01-00000327
+0000001C 50DA 0004               00000004    384+         ST    R13,4(R10)                                               01-00000328
+00000020 50AD 0008               00000008    385+         ST    R10,8(R13)                                               01-00000329
+00000024 58BD 0018               00000018    386+         L     R11,24(R13)                                              01-00000330
+00000028 18DA                                387+         LR    R13,R10                                                  01-00000331
+0000002A 5830 2020               00000020    388          L     R3,QCB_CB_EP
+0000002E 1233                                389          LTR   R3,R3
+00000030 4770 C03A               0000003A    390          BNZ   NSWORK
+00000034 17FF                                391          XR    R15,R15
+00000036 47F0 C10A               0000010A    392          B     NSRET
+0000003A C0F0 0000 0095          00000164    393 NSWORK   LARL  R15,MPMCQ_NOTIF
+00000040 C0FD 8000 0000                      394          OILF  R15,X'80000000'
+i                                             395          IDENTIFY EP=QNOTIFY,ENTRY=(R15)
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   15
+  Active Usings: MPMCQ_QCB,R2  MPMCQNT,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000046 A705 0006               00000052    396+         BRAS  0,*+12                            GET EPNAME ADDR   @L1C 01-IDENTIFY
+0000004A D8D5D6E3C9C6E840                    397+         DC    CL8'QNOTIFY'                      EP SYMBOL              01-IDENTIFY
+00000052 181F                                400+         LR    1,R15                             LOAD PARAMETER REG 1   02-IHBINNRA
+00000054 0A29                                401+         SVC   41                                ISSUE IDENTIFY SVC     01-IDENTIFY
+00000056 185F                                402          LR    R5,R15
+00000058 A75E 0000                           403          CHI   R5,0
+0000005C 4780 C068               00000068    404          BE    NSATT
+00000060 A75E 0004                           405          CHI   R5,4
+00000064 4770 C108               00000108    406          BNE   NSBAD
+00000068 C009 0000 0048                      407 NSATT    IILF  R0,AT_LEN
+0000006E A70A 0007                           408          AHI   R0,7
+00000072 C00B FFFF FFF8                      409          NILF  R0,X'FFFFFFF8'
+00000078 1860                                410          LR    R6,R0
+0000007A A70A 0008                           411          AHI   R0,8
+                                             412          GETMAIN R,LV=(0)
+0000007E 4510 C082               00000082    414+         BAL   1,*+4                   INDICATE GETMAIN        @Z30EN9G 01-GETMAIN
+00000082 0A0A                                415+         SVC   10                      ISSUE GETMAIN SVC                01-GETMAIN
+00000084 18A1                                416          LR    R10,R1
+00000086 50AD 0000               00000000    417          ST    R10,0(R13)
+0000008A 180A                                418          LR    R0,R10
+0000008C 1816                                419          LR    R1,R6
+0000008E C0E0 0000 00F5          00000278    420          LARL  R14,ATTMP
+00000094 18F6                                421          LR    R15,R6
+00000096 0E0E                                422          MVCL  R0,R14
+00000098 4136 A000               00000000    423          LA    R3,0(R6,R10)
+                                             424          ATTACH EP=QNOTIFY,PARAM=((R2)),VL=1,MF=(E,(3)),SF=(E,(10))
+                                             427+* /* MACDATE   06/29/23                                          @P7C*/
+                                             428+* /*
+0000009C 1813                                433+         LR    1,3                               LOAD PARAMETER REG 1   03-IHBINNRR
+0000009E 5020 1000               00000000    434+         ST    (R2),0(0,1)                       STORE INTO PARAM. LIST 02-IHBOPLTX
+000000A2 9680 1000      00000000             435+         OI    0(1),X'80'                 SET LAST WORD BIT ON @G860P40 02-IHBOPLTX
+000000A6 18FA                                436+         LR    15,10              LOAD LIST ADDRESS            @G860PXB 01-ATTACH
+000000A8 41E0 F01C               0000001C    437+         LA    14,28(,15)         PICK UP EP ADDRESS           @G860PXB 01-ATTACH
+000000AC 50E0 F000               00000000    438+         ST    14,0(,15)          INSERT EP ADDRESS INTO LIST  @G860PXB 01-ATTACH
+000000B0 D207 F01C C0BA 0000001C 000000BA    439+         MVC   28(8,15),*+10      MOVE EP SYMB INTO LIST       @G860PXB 01-ATTACH
+000000B6 47F0 C0C2               000000C2    440+         B     *+12               BRANCH AROUND EP SYMBOL      @G860PXB 01-ATTACH
+000000BA D8D5D6E3C9C6E840                    441+         DC    CL8'QNOTIFY'       EP SYMBOL                    @G860PXB 01-ATTACH
+000000C2 9248 F037      00000037             442+         MVI   55(15),72          SET LENGTH OF THIS PARM LIST @G860PXB 01-ATTACH
+000000C6 9680 F008      00000008             443+         OI    8(15),X'80'        SET NEW FORMAT BIT           @G860PXB 01-ATTACH
+000000CA 947F F03C      0000003C             444+         NI    60(15),127         CLEAR UNWANTED BITS          @ZA72420 01-ATTACH
+000000CE 9201 F03D      0000003D             445+         MVI   61(15),1           SET FORMAT NUMBER            @G860PXB 01-ATTACH
+000000D2 0A2A                                446+         SVC   42                 ISSUE ATTACH SVC             @G860PXB 01-ATTACH
+000000D4 185F                                447          LR    R5,R15
+000000D6 1871                                448          LR    R7,R1
+000000D8 58AD 0000               00000000    449          L     R10,0(R13)
+000000DC C009 0000 0048                      450          IILF  R0,AT_LEN
+000000E2 A70A 0007                           451          AHI   R0,7
+000000E6 C00B FFFF FFF8                      452          NILF  R0,X'FFFFFFF8'
+000000EC A70A 0008                           453          AHI   R0,8
+000000F0 181A                                454          LR    R1,R10
+                                             455          FREEMAIN R,LV=(0),A=(1)
+000000F2 4110 1000               00000000    457+         LA    1,0(0,1)                          LOAD AREA ADDRESS      01-FREEMAIN
+000000F6 0A0A                                458+         SVC   10                                ISSUE FREEMAIN SVC     01-FREEMAIN
+000000F8 1255                                459          LTR   R5,R5
+i000000FA 4770 C108               00000108    460          BNZ   NSBAD
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   16
+  Active Usings: MPMCQ_QCB,R2  MPMCQNT,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+000000FE 5070 2038               00000038    461          ST    R7,QCB_CB_TCB
+00000102 17FF                                462          XR    R15,R15
+00000104 47F0 C10A               0000010A    463          B     NSRET
+00000108 18F5                                464 NSBAD    LR    R15,R5
+                                             465 NSRET    QLEAVE
+0000010A 181D                                466+NSRET    LR    R1,R13                                                   01-00000336
+0000010C 58DD 0004               00000004    467+         L     R13,4(R13)                                               01-00000337
+00000110 50FD 0010               00000010    468+         ST    R15,16(R13)                                              01-00000338
+00000114 A708 0048                           469+         LHI   R0,SAVL                                                  01-00000339
+00000118 4110 1000               00000000    472+         LA    1,0(0,1)                          LOAD AREA ADDRESS      02-FREEMAIN
+0000011C 0A0A                                473+         SVC   10                                ISSUE FREEMAIN SVC     02-FREEMAIN
+0000011E 58FD 0010               00000010    474+         L     R15,16(R13)                                              01-00000341
+00000122 58ED 000C               0000000C    475+         L     R14,12(R13)                                              01-00000342
+00000126 982C D01C               0000001C    476+         LM    R2,R12,28(R13)                                           01-00000343
+0000012A 07FE                                477+         BR    R14                                                      01-00000344
+                                             478 *
+                                             479 QCBSTOP  QLEAF MPMCQNT
+0000012C 90EC D00C               0000000C    480+QCBSTOP  STM   R14,R12,12(R13)                                          01-00000298
+00000130 C0C0 FFFF FF68          00000000    481+         LARL  R12,MPMCQNT                                              01-00000299
+00000136 18B1                                482+         LR    R11,R1                                                   01-00000300
+00000138 582B 0000               00000000    483          L     R2,QSTOP_QCB-MPMCQ_STOP_PL(R11)
+0000013C 5800 201C               0000001C    484          L     R0,QCB_FLAGS
+00000140 1830                                485 QSTOPLP  LR    R3,R0
+00000142 C03D 8000 0000                      486          OILF  R3,QCBF_STOP
+00000148 BA03 201C               0000001C    487          CS    R0,R3,QCB_FLAGS
+0000014C 4770 C140               00000140    488          BNE   QSTOPLP
+                                             489          POST  QCB_CB_ECB
+                                             490+*        MACDATE  12/25/13                                         @L4C
+00000150 1B00                                492+         SR    0,0                    . SET POST CODE              @D1A 01-POST
+00000152 4110 202C               0000002C    493+         LA    1,QCB_CB_ECB           . LOAD ECB ADDRESS           @D1A 01-POST
+00000156 0A02                                494+         SVC   2                      . ISSUE THE POST SVC         @D1A 01-POST
+00000158 17FF                                495          XR    R15,R15
+                                             496          QLEAVER
+0000015A 58ED 000C               0000000C    497+         L     R14,12(R13)                                              01-00000305
+0000015E 982C D01C               0000001C    498+         LM    R2,R12,28(R13)                                           01-00000306
+00000162 07FE                                499+         BR    R14                                                      01-00000307
+                                             500 *
+00000164                                     501 MPMCQ_NOTIF DS 0H
+                                             502          QENTER MPMCQNT
+00000164 90EC D00C               0000000C    503+         STM   R14,R12,12(R13)                                          01-00000322
+00000168 C0C0 FFFF FF4C          00000000    504+         LARL  R12,MPMCQNT                                              01-00000323
+0000016E A708 0048                           505+         LHI   R0,SAVL                                                  01-00000324
+00000172 4510 C176               00000176    508+         BAL   1,*+4                   INDICATE GETMAIN        @Z30EN9G 02-GETMAIN
+00000176 0A0A                                509+         SVC   10                      ISSUE GETMAIN SVC                02-GETMAIN
+00000178 18A1                                510+         LR    R10,R1                                                   01-00000326
+0000017A D747 A000 A000 00000000 00000000    511+         XC    0(SAVL,R10),0(R10)                                       01-00000327
+00000180 50DA 0004               00000004    512+         ST    R13,4(R10)                                               01-00000328
+00000184 50AD 0008               00000008    513+         ST    R10,8(R13)                                               01-00000329
+00000188 58BD 0018               00000018    514+         L     R11,24(R13)                                              01-00000330
+0000018C 18DA                                515+         LR    R13,R10                                                  01-00000331
+0000018E 582B 0000               00000000    516          L     R2,0(R11)
+00000192 C02B 7FFF FFFF                      517          NILF  R2,X'7FFFFFFF'
+00000198 A708 0020                           518          LHI   R0,32
+                                             519          GETMAIN R,LV=(0)
+i0000019C 4510 C1A0               000001A0    521+         BAL   1,*+4                   INDICATE GETMAIN        @Z30EN9G 01-GETMAIN
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   17
+  Active Usings: MPMCQ_QCB,R2  MPMCQNT,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+000001A0 0A0A                                522+         SVC   10                      ISSUE GETMAIN SVC                01-GETMAIN
+000001A2 18A1                                523          LR    R10,R1
+000001A4 5800 201C               0000001C    524 NLOOP    L     R0,QCB_FLAGS
+000001A8 C00B 8000 0000                      525          NILF  R0,QCBF_STOP
+000001AE 1200                                526          LTR   R0,R0
+000001B0 4770 C248               00000248    527          BNZ   NDONE
+000001B4 5800 202C               0000002C    528          L     R0,QCB_CB_ECB
+000001B8 1711                                529 NCLR     XR    R1,R1
+000001BA BA01 202C               0000002C    530          CS    R0,R1,QCB_CB_ECB
+000001BE A774 FFFD               000001B8    531          JNE   NCLR
+000001C2 5800 201C               0000001C    532          L     R0,QCB_FLAGS
+000001C6 C00B 8000 0000                      533          NILF  R0,QCBF_STOP
+000001CC 1200                                534          LTR   R0,R0
+000001CE 4770 C248               00000248    535          BNZ   NDONE
+000001D2 5860 2030               00000030    536          L     R6,QCB_ENQ_SEQ
+000001D6 5850 2034               00000034    537          L     R5,QCB_CB_SEQ_SEEN
+000001DA 1846                                538          LR    R4,R6
+000001DC 1B45                                539          SR    R4,R5
+000001DE 1244                                540          LTR   R4,R4
+000001E0 4770 C1F2               000001F2    541          BNZ   NWORK
+                                             542          WAIT  ECB=QCB_CB_ECB
+                                             543+*        MACDATE  10/20/88                                         @01C
+000001E4 4100 0001               00000001    545+         LA    0,1(0,0)                    COUNT OMITTED,1 USED    @L1C 01-WAIT
+000001E8 4110 202C               0000002C    548+         LA    1,QCB_CB_ECB                      LOAD PARAMETER REG 1   02-IHBINNRA
+000001EC 0A01                                549+         SVC   1                           LINK TO WAIT ROUTINE    @L1C 01-WAIT
+000001EE A7F4 FFDB               000001A4    550          J     NLOOP
+000001F2 5860 2030               00000030    551 NWORK    L     R6,QCB_ENQ_SEQ
+000001F6 5850 2034               00000034    552          L     R5,QCB_CB_SEQ_SEEN
+000001FA 1846                                553          LR    R4,R6
+000001FC 1B45                                554          SR    R4,R5
+000001FE 1244                                555          LTR   R4,R4
+00000200 A784 FFD2               000001A4    556          JZ    NLOOP
+00000204 5060 2034               00000034    557          ST    R6,QCB_CB_SEQ_SEEN
+                                             558          MPMCQ_STATINC R2,QCB_STAT_CB_CALLS,R8,R9
+00000208                                     559+         DS    0H                                                       01-00000232
+00000208 A798 0001                           560+         LHI   R9,1                                                     01-00000233
+0000020C EB89 2440 00FA          00000440    561+         LAAL  R8,R9,QCB_STAT_CB_CALLS-MPMCQ_QCB(R2)                    01-00000234
+                                             562          MPMCQ_STATMAX R2,QCB_STAT_CB_PENDING_MAX,R4,R8,R0
+00000212                                     563+         DS    0H                                                       01-00000239
+00000212 5882 0444               00000444    564+         L     R8,QCB_STAT_CB_PENDING_MAX-MPMCQ_QCB(R2)                 01-00000240
+00000216                                     565+SM0035    DS   0H                                                       01-00000241
+00000216 1948                                566+         CR    R4,R8                                                    01-00000242
+00000218 47D0 C226               00000226    567+         BNH   SX0035                                                   01-00000243
+0000021C 1804                                568+         LR    R0,R4                                                    01-00000244
+0000021E BA80 2444               00000444    569+         CS    R8,R0,QCB_STAT_CB_PENDING_MAX-MPMCQ_QCB(R2)              01-00000245
+00000222 4770 C216               00000216    570+         BNE   SM0035                                                   01-00000246
+00000226                                     571+SX0035    DS   0H                                                       01-00000247
+00000226 5870 2020               00000020    572          L     R7,QCB_CB_EP
+0000022A 1277                                573          LTR   R7,R7
+0000022C 4780 C1A4               000001A4    574          BZ    NLOOP
+00000230 181A                                575          LR    R1,R10
+00000232 5800 2024               00000024    576          L     R0,QCB_CB_CTX
+00000236 5001 0000               00000000    577          ST    R0,CBP_CTX-MPMCQ_CB_PLIST(R1)
+0000023A 5021 0004               00000004    578          ST    R2,CBP_QCB-MPMCQ_CB_PLIST(R1)
+i0000023E 5041 0008               00000008    579          ST    R4,CBP_PENDING-MPMCQ_CB_PLIST(R1)
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   18
+  Active Usings: MPMCQ_QCB,R2  MPMCQNT,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000242 05E7                                580          BALR  R14,R7
+00000244 47F0 C1A4               000001A4    581          B     NLOOP
+00000248 181A                                582 NDONE    LR    R1,R10
+0000024A A708 0020                           583          LHI   R0,32
+                                             584          FREEMAIN R,LV=(0),A=(1)
+0000024E 4110 1000               00000000    586+         LA    1,0(0,1)                          LOAD AREA ADDRESS      01-FREEMAIN
+00000252 0A0A                                587+         SVC   10                                ISSUE FREEMAIN SVC     01-FREEMAIN
+00000254 17FF                                588          XR    R15,R15
+                                             589          QLEAVE
+00000256 181D                                590+         LR    R1,R13                                                   01-00000336
+00000258 58DD 0004               00000004    591+         L     R13,4(R13)                                               01-00000337
+0000025C 50FD 0010               00000010    592+         ST    R15,16(R13)                                              01-00000338
+00000260 A708 0048                           593+         LHI   R0,SAVL                                                  01-00000339
+00000264 4110 1000               00000000    596+         LA    1,0(0,1)                          LOAD AREA ADDRESS      02-FREEMAIN
+00000268 0A0A                                597+         SVC   10                                ISSUE FREEMAIN SVC     02-FREEMAIN
+0000026A 58FD 0010               00000010    598+         L     R15,16(R13)                                              01-00000341
+0000026E 58ED 000C               0000000C    599+         L     R14,12(R13)                                              01-00000342
+00000272 982C D01C               0000001C    600+         LM    R2,R12,28(R13)                                           01-00000343
+00000276 07FE                                601+         BR    R14                                                      01-00000344
+                                             602 *
+00000278                                     603          LTORG
+00000278                                     604          DS    0D
+                                             605 ATTMP    ATTACH EP=QNOTIFY,SF=L
+                                             608+* /* MACDATE   06/29/23                                          @P7C*/
+                                             609+* /*
+00000278                                     610+ATTMP    DS    0F                                                       01-ATTACH
+00000278 00000294                            611+         DC    A(*+28)            POINTER TO SYMBOL NAME       @G860PXB 01-ATTACH
+0000027C 00000000                            612+         DC    A(0)               DCB ADDRESS                  @G860PXB 01-ATTACH
+00000280 80000000                            613+         DC    A(X'80000000')     NEW FORMAT + ECB ADDR        @G860PXB 01-ATTACH
+00000284 00000000                            614+         DC    A(0)               GSPL OR GSPV                 @G860PXB 01-ATTACH
+00000288 00000000                            615+         DC    A(0)               SHSPV OR SHSPL               @G860PXB 01-ATTACH
+0000028C 00000000                            616+         DC    A(0)               EXIT ROUTINE ADDRESS         @G860PXB 01-ATTACH
+00000290 0000                                617+         DC    AL2(0)             DPMOD VALUE                  @G860PXB 01-ATTACH
+00000292 00                                  618+         DC    AL1(0)             LPMOD VALUE                  @G860PXB 01-ATTACH
+00000293 00                                  619+         DC    AL1(0)             STATUS BYTE                  @G860PXB 01-ATTACH
+00000294 D8D5D6E3C9C6E840                    620+         DC    CL8'QNOTIFY'       EP SYMBOL                    @G860PXB 01-ATTACH
+0000029C 00000000                            621+         DC    A(0)               ADDRESS OF JSCB              @G860PXB 01-ATTACH
+000002A0 00000000                            622+         DC    A(0)               (E)STAI PARM LIST            @G860PXB 01-ATTACH
+000002A4 00000000                            623+         DC    A(0)               EXIT ADDRESS                 @G860PXB 01-ATTACH
+000002A8 00000000                            624+         DC    A(0)               TASKLIB                      @G860PXB 01-ATTACH
+000002AC 00                                  625+         DC    AL1(0)             FLAG BYTE                    @G860PXB 01-ATTACH
+000002AD 00                                  626+         DC    AL1(0)             TASK ID                      @G860PXB 01-ATTACH
+000002AE 0048                                627+         DC    AL2(72)            PARM LIST LENGTH             @G860PXB 01-ATTACH
+000002B0 00000000                            628+         DC    A(0)               SUBPOOL LIST ADDRESS/VALUE   @G860PXB 01-ATTACH
+000002B4 00                                  629+         DC    AL1(0)             SET FLAGS                    @G860PXB 01-ATTACH
+000002B5 01                                  630+         DC    AL1(1)             SET UP FORMAT NUMBER         @G860PXB 01-ATTACH
+000002B6 0000000000000000                    631+         DC    XL10'00'           RESERVED BYTES FOR FUTURE    @G860PXB 01-ATTACH
+                        00000048             632 AT_LEN   EQU   *-ATTMP
+00000000                                     633          END   MPMCQNT
+»
+                                                 Relocation Dictionary                                         Page   19
+   Pos.Id   Rel.Id   Address  Type    Length  Action                                        HLASM R6.0  2026/11/10 15.20
+  00000008 00000008 00000278   A         4       +
+»
+                               Ordinary Symbol and Literal Cross Reference                                     Page   20
+Symbol   Length   Value     Id    R Type Asm  Program   Defn References                     HLASM R6.0  2026/11/10 15.20
+AT_LEN        1 00000048 00000008 A   U                  632  407   450
+ATTMP         4 00000278 00000008     F  F               610  420   632
+CBP_CTX       4 00000000 FFFFFFF7     F  F               214  577M
+CBP_PENDING
+              4 00000008 FFFFFFF7     F  F               216  579M
+CBP_QCB       4 00000004 FFFFFFF7     F  F               215  578M
+MPMCQ_CB_PLIST
+              1 00000000 FFFFFFF7     J                  213  577M  578M  579M
+MPMCQ_NODE
+              1 00000000 FFFFFFFE     J                  127  136   140
+MPMCQ_NOTIF
+              2 00000164 00000008     H  H               501  371   393
+MPMCQ_NSTART
+              2 00000000 00000008     H  H               373  369
+MPMCQ_QCB
+              1 00000000 FFFFFFFF     J                   77   89    93    97   101   120   125   367U  561M  564   569M
+MPMCQ_STOP_PL
+              1 00000000 FFFFFFF8     J                  210  483
+MPMCQNT       1 00000000 00000008     J                  363  364   365   366U  376   481   504   633
+NCLR          2 000001B8 00000008     I                  529  531B
+NDONE         2 00000248 00000008     I                  582  527B  535B
+NLOOP         4 000001A4 00000008     I                  524  550B  556B  574B  581B
+NSATT         6 00000068 00000008     I                  407  404B
+NSBAD         2 00000108 00000008     I                  464  406B  460B
+NSRET         2 0000010A 00000008     I                  466  392B  463B
+NSWORK        6 0000003A 00000008     I                  393  390B
+NWORK         4 000001F2 00000008     I                  551  541B
+QCB_CB_CTX
+              4 00000024 FFFFFFFF     F  F                83  576
+QCB_CB_ECB
+              4 0000002C FFFFFFFF     F  F                85  493   528   530M  548
+QCB_CB_EP
+              4 00000020 FFFFFFFF     F  F                82  388   572
+QCB_CB_SEQ_SEEN
+              4 00000034 FFFFFFFF     F  F                87  537   552   557M
+QCB_CB_TCB
+              4 00000038 FFFFFFFF     F  F                88  461M
+QCB_ENQ_SEQ
+              4 00000030 FFFFFFFF     F  F                86  536   551
+QCB_FLAGS
+              4 0000001C FFFFFFFF     F  F                81  484   487M  524   532
+QCB_STAT_CB_CALLS
+              4 00000440 FFFFFFFF     F  F               118  561M
+QCB_STAT_CB_PENDING_MAX
+              4 00000444 FFFFFFFF     F  F               119  564   569M
+QCBF_STOP
+              1 80000000 FFFFFFFD A   U                  182  486   525   533
+QCBSTOP       4 0000012C 00000008     I                  480  370
+QSTOP_QCB
+              4 00000000 FFFFFFF8     F  F               211  483
+QSTOPLP       2 00000140 00000008     I                  485  488B
+R0            1 00000000 00000004 A   U                   22  377M  407M  408M  409M  410   411M  418M  422M  450M  451M  452M  453M
+                                                              469M  484M  485   487M  505M  518M  524M  525M  526M  526   528M  530M
+                                                              532M  533M  534M  534   568M  569   576M  577   583M  593M
+R1            1 00000001 00000004 A   U                   23  382   416   419M  448   454M  466M  482   510   523   529M  529   530
+»
+                               Ordinary Symbol and Literal Cross Reference                                     Page   21
+Symbol   Length   Value     Id    R Type Asm  Program   Defn References                     HLASM R6.0  2026/11/10 15.20
+                                                              575M  577   578   579   582M  590M
+R10           1 0000000A 00000004 A   U                   32  382M  383   383   384   385   387   416M  417   418   423   449M  454
+                                                              510M  511   511   512   513   515   523M  575   582
+R11           1 0000000B 00000004 A   U                   33  386M  482M  483   514M  516
+R12           1 0000000C 00000004 A   U                   34  366U  375   376M  476M  480   481M  498M  503   504M  600M
+R13           1 0000000D 00000004 A   U                   35  375   384   385   386   387M  417   449   466   467M  467   468   474
+                                                              475   476   480   497   498   503   512   513   514   515M  590   591M
+                                                              591   592   598   599   600
+R14           1 0000000E 00000004 A   U                   36  375   420M  422M  475M  477B  480   497M  499B  503   580M  599M  601B
+R15           1 0000000F 00000004 A   U                   37  391M  391   393M  394M  400   402   421M  447   462M  462   464M  468
+                                                              474M  495M  495   588M  588   592   598M
+R2            1 00000002 00000004 A   U                   24  367U  434   476M  483M  498M  516M  517M  561   564   569   578   600M
+R3            1 00000003 00000004 A   U                   25  388M  389M  389   423M  485M  486M  487
+R4            1 00000004 00000004 A   U                   26  538M  539M  540M  540   553M  554M  555M  555   566   568   579
+R5            1 00000005 00000004 A   U                   27  402M  403   405   447M  459M  459   464   537M  539   552M  554
+R6            1 00000006 00000004 A   U                   28  410M  419   421   423   536M  538   551M  553   557
+R7            1 00000007 00000004 A   U                   29  448M  461   572M  573M  573   580B
+R8            1 00000008 00000004 A   U                   30  561M  564M  566   569M
+R9            1 00000009 00000004 A   U                   31  560M  561
+SAVL          1 00000048 00000004 A   U                   39  377   383   469   505   511   593
+SM0035        2 00000216 00000008     H  H               565  570B
+SX0035        2 00000226 00000008     H  H               571  567B
+TLS_LINE      1 00000100 00000004 A   U                   58   59
+TLS_SLOTS
+              1 00000040 00000004 A   U                   57   59    66
+»
+                                  Unreferenced Symbols Defined in CSECTs                                       Page   22
+  Defn  Symbol                                                                              HLASM R6.0  2026/11/10 15.20
+    75  MPMCQ_STATS_VERSION
+    67  POOL_N
+    71  POOL_16K
+    68  POOL_2K
+    72  POOL_32K
+    69  POOL_4K
+    73  POOL_64K
+    70  POOL_8K
+    56  PSATOLD
+    59  TLS_BYTES
+    63  TLS_COUNT
+    60  TLS_DEPTH
+    61  TLS_FILL
+    66  TLS_MASK
+    65  TLS_NODES
+    62  TLS_OWNER
+    64  TLS_STAMP
+»
+                                          Macro and Copy Code Source Summary                                   Page   23
+ Con Source                                        Volume    Members                        HLASM R6.0  2026/11/10 15.20
+     PRIMARY INPUT                                           MPMCQ_STATADD64   MPMCQ_STATADD64S  MPMCQ_STATINC
+                                                             MPMCQ_STATMAX     MPMCQ_STATMAX64   QENTER   QLEAF
+                                                             QLEAVE   QLEAVER  QLEAVER89         QLEAVE89
+  L1 Z72675.QUEUE.MAC                              ZXPC02    API      ATOMICS  DSECTS   LINKAGE  REGS
+  L2 SYS1.MACLIB                                   VTMVSC    ATTACH   FREEMAIN GETMAIN  IDENTIFY IHBINNRA IHBINNRR
+                                                             IHBOPLTX POST     SPLEVEL  SYSSTATE WAIT
+»
+                                                Dsect Cross Reference                                          Page   24
+Dsect     Length      Id       Defn                                                         HLASM R6.0  2026/11/10 15.20
+MPMCQ_CB_PLIST
+         0000000C  FFFFFFF7     213
+MPMCQ_NODE
+         00000500  FFFFFFFE     127
+MPMCQ_QCB
+         00000538  FFFFFFFF      77
+MPMCQ_QDEQ_PLIST
+         00000010  FFFFFFFA     199
+MPMCQ_QENQ_PLIST
+         0000000C  FFFFFFFB     194
+MPMCQ_QINIT_PLIST
+         00000018  FFFFFFFC     186
+MPMCQ_QSTATS_PLIST
+         0000000C  FFFFFFF9     205
+MPMCQ_STATS
+         00000050  FFFFFFFD     142
+MPMCQ_STOP_PL
+         00000004  FFFFFFF8     210
+»
+                                                      Using Map                                                Page   25
+                                                                                            HLASM R6.0  2026/11/10 15.20
+  Stmt  -----Location----- Action ----------------Using----------------- Reg Max     Last Label and Using Text
+          Count      Id           Type          Value    Range     Id        Disp    Stmt
+   366  00000000  00000008 USING  ORDINARY    00000000 00001000 00000008  12 00248    581 MPMCQNT,R12
+   367  00000000  00000008 USING  ORDINARY    00000000 00001000 FFFFFFFF   2 00038    576 MPMCQ_QCB,R2
+»
+                                   General Purpose Register Cross Reference                                    Page   26
+ Register  References (M=modified, B=branch, U=USING, D=DROP, N=index)                      HLASM R6.0  2026/11/10 15.20
+    0(0)     375   377M  396M  407M  408M  409M  410   411M  418M  422M  450M  451M  452M  453M  469M  480   484M  485   487M  492M
+             492   503   505M  518M  524M  525M  526M  526   528M  530M  532M  533M  534M  534   545M  568M  569   576M  577   583M
+             593M
+    1(1)     375   380M  382   400M  414M  416   419M  422M  433M  434   435   448   454M  457M  457   466M  472M  472   480   482
+             493M  503   508M  510   521M  523   529M  529   530   548M  575M  577N  578N  579N  582M  586M  586   590M  596M  596
+    2(2)     367U  375   434   476M  480   483M  498M  503   516M  517M  561   564N  569   578   600M
+    3(3)     375   388M  389M  389   423M  433   476M  480   485M  486M  487   498M  503   600M
+    4(4)     375   476M  480   498M  503   538M  539M  540M  540   553M  554M  555M  555   566   568   579   600M
+    5(5)     375   402M  403   405   447M  459M  459   464   476M  480   498M  503   537M  539   552M  554   600M
+    6(6)     375   410M  419   421   423N  476M  480   498M  503   536M  538   551M  553   557   600M
+    7(7)     375   448M  461   476M  480   498M  503   572M  573M  573   580B  600M
+    8(8)     375   476M  480   498M  503   561M  564M  566   569M  600M
+    9(9)     375   476M  480   498M  503   560M  561   600M
+   10(A)     375   382M  383   383   384N  385   387   416M  417   418   423   436   449M  454   476M  480   498M  503   510M  511
+             511   512N  513   515   523M  575   582   600M
+   11(B)     375   386M  476M  480   482M  483N  498M  503   514M  516N  600M
+   12(C)     366U  375   376M  476M  480   481M  498M  503   504M  600M
+   13(D)     375   384   385N  386N  387M  417N  449N  466   467M  467N  468N  474N  475N  476   480   497N  498   503   512   513N
+             514N  515M  590   591M  591N  592N  598N  599N  600
+   14(E)     375   420M  422M  437M  438   475M  477B  480   497M  499B  503   580M  599M  601B
+   15(F)     375   391M  391   393M  394M  400   402   421M  422M  436M  437   438   439   442   443   444   445   447   462M  462
+             464M  468   474M  480   495M  495   503   588M  588   592   598M
+»
+                                  Diagnostic Cross Reference and Assembler Summary                             Page   27
+                                                                                            HLASM R6.0  2026/11/10 15.20
+     No Statements Flagged in this Assembly
+HIGH LEVEL ASSEMBLER, 5696-234, RELEASE 6.0, PTF UO07449
+SYSTEM: z/OS 03.01.00              JOBNAME: MPMCQ       STEPNAME: ASMNT      PROCSTEP: (NOPROC)
+Unicode Module:   ASMA047C   From Page     1148   To Page    17584           ECECP: International 1
+Data Sets Allocated for this Assembly
+ Con DDname   Data Set Name                                Volume  Member
+  P1 SYSIN    Z72675.QUEUE.ASM                             ZXPC02  MPMCQNT
+  L1 SYSLIB   Z72675.QUEUE.MAC                             ZXPC02
+  L2          SYS1.MACLIB                                  VTMVSC
+  L3          SYS1.MODGEN                                  VTMVSC
+     SYSLIN   Z72675.QUEUE.OBJ                             ZXPC02  MPMCQNT
+     SYSPRINT Z72675.MPMCQ.JOB08338.D0000105.?
+
+  26824K allocated to Buffer Pool       Storage required     888K
+    145 Primary Input Records Read         8946 Library Records Read                  0 Work File Reads
+      0 ASMAOPT Records Read                924 Primary Print Records Written         0 Work File Writes
+     28 Object Records Written                0 ADATA Records Written
+Assembly Start Time: 15.20.46 Stop Time: 15.20.46 Processor Time: 00.00.00.0060
+Return Code 002

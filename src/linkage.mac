@@ -1,0 +1,79 @@
+         TITLE 'LINKAGE - OS SAVE AREA MACROS'
+***********************************************************************
+*  LINKAGE.MAC
+*  COPY REGS FIRST (SAVL, R0-R15).
+*  QLEAF  - SAVE INTO CALLER SAVE AREA. PLIST LEFT IN R11.
+*           OPTIONAL &BASE: LARL SETS R12 TO CSECT BASE.
+*           WITHOUT &BASE: R12 IS TAKEN FROM R15.
+*  QLEAVER- RETURN. R0, R1, AND R15 PRESERVED AS CALLER SET THEM.
+*  QLEAVER89 - RETURN R15 PLUS R8/R9 IN BITS 32-63.
+*  QENTER - CALLER SAVE AREA CHAINING VIA GETMAIN.
+*  QLEAVE - FREEMAIN SAVE AREA AND RETURN R15.
+*  QLEAVE89 - FREEMAIN SAVE AREA AND RETURN R15 + R8/R9.
+***********************************************************************
+         MACRO
+&LBL     QLEAF &BASE
+&LBL     STM   R14,R12,12(R13)
+         LARL  R12,&BASE
+         LR    R11,R1
+         MEND
+*
+         MACRO
+&LBL     QLEAVER
+&LBL     L     R14,12(R13)
+         LM    R2,R12,28(R13)
+         BR    R14
+         MEND
+*
+         MACRO
+&LBL     QLEAVER89
+&LBL     L     R14,12(R13)
+         LM    R2,R7,28(R13)
+         LM    R10,R12,60(R13)
+         LLGFR R8,R8
+         LLGFR R9,R9
+         BR    R14
+         MEND
+*
+         MACRO
+&LBL     QENTER &BASE
+&LBL     STM   R14,R12,12(R13)
+         LARL  R12,&BASE
+         LHI   R0,SAVL
+         GETMAIN R,LV=(0)
+         LR    R10,R1
+         XC    0(SAVL,R10),0(R10)
+         ST    R13,4(R10)
+         ST    R10,8(R13)
+         L     R11,24(R13)
+         LR    R13,R10
+         MEND
+*
+         MACRO
+&LBL     QLEAVE
+&LBL     LR    R1,R13
+         L     R13,4(R13)
+         ST    R15,16(R13)
+         LHI   R0,SAVL
+         FREEMAIN R,LV=(0),A=(1)
+         L     R15,16(R13)
+         L     R14,12(R13)
+         LM    R2,R12,28(R13)
+         BR    R14
+         MEND
+*
+         MACRO
+&LBL     QLEAVE89
+&LBL     LR    R1,R13
+         L     R13,4(R13)
+         ST    R15,16(R13)
+         LHI   R0,SAVL
+         FREEMAIN R,LV=(0),A=(1)
+         LM    R2,R7,28(R13)
+         LM    R10,R12,60(R13)
+         L     R15,16(R13)
+         L     R14,12(R13)
+         LLGFR R8,R8
+         LLGFR R9,R9
+         BR    R14
+         MEND

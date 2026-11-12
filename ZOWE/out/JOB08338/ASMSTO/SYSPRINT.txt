@@ -1,0 +1,1776 @@
+»
+                                         High Level Assembler Option Summary                   (PTF UO07449)   Page    1
+                                                                                            HLASM R6.0  2026/11/10 15.20
+  No Overriding ASMAOPT Parameters
+  Overriding Parameters-  OBJECT,NODECK,RENT,GOFF,MACHINE(Z15),LIST
+  Process Statements-     RENT,MACHINE(Z15)
+
+** ASMA434N GOFF/XOBJECT option specified, option LIST(133) will be used
+
+  Options for this Assembly
+                    NOADATA
+                      ALIGN
+                    NOASA
+                      ASCII(00819)
+                      BATCH
+                      CA(LOCAL)
+                      CE(LOCAL)
+                      CODEPAGE(01148)
+                    NOCOMPAT
+                      CU(LOCAL)
+                    NODATAMAP
+                    NODBCS
+3 PARM/OPTION       NODECK
+                      DXREF
+                      EBCDIC(00037)
+                      ESD
+                    NOEXIT
+                      FAIL(NOMSG,NOMNOTE,MAXERRS(500))
+                      FLAG(0,ALIGN,CONT,EXLITW,NOIMPLEN,NOLONGER,NOPAGE0,PUSH,RECORD,RENT,NOSIGNED,NOSUBSTR,NOTRUNC,USING0)
+                    NOFOLD
+3 PARM/OPTION         GOFF(NOADATA)
+                      ILMA
+                    NOINFO
+                      LANGUAGE(EN)
+                    NOLIBMAC
+                      LINECOUNT(60)
+3 PARM/OPTION         LIST(133)
+3 PARM/OPTION         MACHINE(z15,NOLIST)
+                      MXREF(SOURCE)
+3 PARM/OPTION         OBJECT
+3 PARM/OPTION         OPTABLE(Z15,NOLIST)
+                    NOPCONTROL
+                    NOPESTOP
+                    NOPROFILE
+                    NORA2
+3 PARM/OPTION         RENT
+                      RLD
+                      RXREF
+                      SECTALGN(8)
+                      SIZE(MAX)
+                    NOSUPRWARN
+                      SYSPARM()
+                    NOTERM
+                    NOTEST
+                      THREAD
+                    NOTRANSLATE
+                      TYPECHECK(MAGNITUDE,REGISTER,SIGNED)
+»
+                                         High Level Assembler Option Summary                   (PTF UO07449)   Page    2
+                                                                                            HLASM R6.0  2026/11/10 15.20
+                      UNICODE(01200)
+                      USING(NOLIMIT,MAP,WARN(15))
+                    NOWORKFILE
+                      XREF(SHORT,UNREFS)
+
+  No Overriding DD Names
+»
+                                              External Symbol Dictionary                                       Page    3
+Symbol   Type   Id     Address  Length   Owner Id Flags Alias-of                            HLASM R6.0  2026/11/10 15.20
+          SD 00000001
+B_IDRL    ED 00000002                    00000001
+B_PRV     ED 00000003                    00000001
+B_TEXT    ED 00000004 00000000 00000000  00000001   00
+MPMCQSTO  SD 00000005
+B_IDRL    ED 00000006                    00000005
+B_PRV     ED 00000007                    00000005
+B_TEXT    ED 00000008 00000000 000004D0  00000005   06
+MPMCQSTO  LD 00000009 00000000           00000008   06
+MPMCQ_PAYGET
+          LD 0000000A 00000000           00000008   00
+MPMCQ_PAYFREE
+          LD 0000000B 00000154           00000008   00
+»
+                                                                                                               Page    4
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+i                                               1 *PROCESS RENT,MACHINE(Z15)
+         MPMCQSTO - PAYLOAD STORAGE                                                                            Page    5
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                               3 ***********************************************************************
+                                               4 *  MPMCQSTO
+                                               5 *  PAYGET: R2=QCB, R7=LEN. R15=0 AND R8/R9=ADDR HALVES, OR R15=8.
+                                               6 *  HALVES ARE IN BITS 32-63. QLEAVER89 LEAVES THEM THERE.
+                                               7 *  PAYFREE: R2=QCB, R7=LEN, R1->8-BYTE ADDRESS IN THE NODE.
+                                               8 *  LEN 1..PAY31_MAX USES A 31-BIT SIZE-CLASS FREELIST.
+                                               9 *  ABOVE THAT, IARV64 GETSTOR/DETACH (1MB SEGMENTS).
+                                              10 *  SLABS ARE NEVER FREEMAIN'D. THE OBTAINING TASK MUST OUTLIVE THEM.
+                                              11 *  CALLER POINTS R13 AT A PRIVATE 72-BYTE SAVE AREA. STM USES IT.
+                                              12 *  THE 64-BIT ADDRESS IS LOADED FROM THE NODE AFTER GETMAIN.
+                                              13 ***********************************************************************
+                                              14          PRINT GEN
+i                                              15          COPY  REGS
+         REGS - REGISTER EQUATES                                                                               Page    6
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                              17=***********************************************************************
+                                              18=*  REGS.INC
+                                              19=*  R0-R15 AND THE OS SAVE-AREA LENGTH.
+                                              20=*  COPY THIS BEFORE ANY OTHER PROJECT MEMBER.
+                                              21=***********************************************************************
+                        00000000              22=R0       EQU   0
+                        00000001              23=R1       EQU   1
+                        00000002              24=R2       EQU   2
+                        00000003              25=R3       EQU   3
+                        00000004              26=R4       EQU   4
+                        00000005              27=R5       EQU   5
+                        00000006              28=R6       EQU   6
+                        00000007              29=R7       EQU   7
+                        00000008              30=R8       EQU   8
+                        00000009              31=R9       EQU   9
+                        0000000A              32=R10      EQU   10
+                        0000000B              33=R11      EQU   11
+                        0000000C              34=R12      EQU   12
+                        0000000D              35=R13      EQU   13
+                        0000000E              36=R14      EQU   14
+                        0000000F              37=R15      EQU   15
+                                              38=* 72-BYTE STANDARD SAVE AREA. MULTIPLE OF 8 FOR GETMAIN R.
+                        00000048              39=SAVL     EQU   72
+i                                              40          COPY  DSECTS
+         DSECTS - QCB, NODE, STATS                                                                             Page    7
+  Active Usings: None
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                              42=***********************************************************************
+                                              43=*  DSECTS.INC
+                                              44=*  QCB BASE MUST BE 256-BYTE ALIGNED (QINIT RETURNS 12).
+                                              45=*  HEAD, TAIL, FREE, AND STATS EACH START ON THEIR OWN LINE.
+                                              46=*  EACH (ABA,PTR) PAIR IS 8-BYTE ALIGNED FOR CDS.
+                                              47=*  NODE_CNT_EXT IS THE EMPTY-NEXT GENERATION. IT SURVIVES REUSE.
+                                              48=*  NODE_CNT_INT IS NODE_F_INLINE WHEN THE BYTES SIT IN THE NODE.
+                                              49=*  INLINE BYTES START ON THEIR OWN CACHE LINE (SAVE AREA TOO).
+                                              50=*  QCB_POOL IS SIX 31-BIT SLAB FREELISTS (2K 4K 8K 16K 32K 64K).
+                                              51=*  QCB_TLS POINTS AT A TCB-SLOT TABLE. PSATOLD IS PSA+X'21C'.
+                                              52=*  TLS_STAMP IS THE SLOT'S LAST USE. AGE MATH USES THE SLOT TAIL.
+                                              53=*  QCB_SIZE IS ALSO PUBLISHED IN API.INC AS QCB_SIZE_PUB.
+                                              54=*  COPY DSECTS BEFORE API.
+                                              55=***********************************************************************
+                        0000021C              56=PSATOLD                EQU   X'21C'
+                        00000040              57=TLS_SLOTS              EQU   64
+                        00000100              58=TLS_LINE               EQU   256
+                        00004000              59=TLS_BYTES              EQU   TLS_SLOTS*TLS_LINE
+                        00000008              60=TLS_DEPTH              EQU   8
+                        00000004              61=TLS_FILL               EQU   4
+                        00000000              62=TLS_OWNER              EQU   0
+                        00000004              63=TLS_COUNT              EQU   4
+                        00000008              64=TLS_STAMP              EQU   8
+                        00000010              65=TLS_NODES              EQU   16
+                        0000003F              66=TLS_MASK               EQU   TLS_SLOTS-1
+                        00000006              67=POOL_N                 EQU   6
+                        00000800              68=POOL_2K                EQU   2048
+                        00001000              69=POOL_4K                EQU   4096
+                        00002000              70=POOL_8K                EQU   8192
+                        00004000              71=POOL_16K               EQU   16384
+                        00008000              72=POOL_32K               EQU   32768
+                        00010000              73=POOL_64K               EQU   65536
+                                              74=*
+                        00000001              75=MPMCQ_STATS_VERSION EQU 1
+                                              76=*
+00000000                00000000 00000538     77=MPMCQ_QCB              DSECT
+00000000                                      78=QCB_EYECATCH           DS    CL8
+00000008                                      79=QCB_NAME               DS    CL16
+00000018                                      80=QCB_VERSION            DS    F
+0000001C                                      81=QCB_FLAGS              DS    F
+00000020                                      82=QCB_CB_EP              DS    F
+00000024                                      83=QCB_CB_CTX             DS    F
+00000028                                      84=QCB_USER_ECB           DS    F
+0000002C                                      85=QCB_CB_ECB             DS    F
+00000030                                      86=QCB_ENQ_SEQ            DS    F
+00000034                                      87=QCB_CB_SEQ_SEEN        DS    F
+00000038                                      88=QCB_CB_TCB             DS    F
+0000003C                0000003C 00000100     89=                       ORG   MPMCQ_QCB+256
+00000100                                      90=                       DS    0D
+00000100                                      91=QCB_HEAD_ABA           DS    F
+00000104                                      92=QCB_HEAD_PTR           DS    F
+00000108                00000108 00000200     93=                       ORG   MPMCQ_QCB+512
+00000200                                      94=                       DS    0D
+00000200                                      95=QCB_TAIL_ABA           DS    F
+i00000204                                      96=QCB_TAIL_PTR           DS    F
+         DSECTS - QCB, NODE, STATS                                                                             Page    8
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000208                00000208 00000300     97=                       ORG   MPMCQ_QCB+768
+00000300                                      98=                       DS    0D
+00000300                                      99=QCB_FREE_ABA           DS    F
+00000304                                     100=QCB_FREE_PTR           DS    F
+00000308                00000308 00000400    101=                       ORG   MPMCQ_QCB+1024
+00000400                                     102=QCB_STAT_ENQ_OK        DS    F
+00000404                                     103=QCB_STAT_DEQ_OK        DS    F
+00000408                                     104=QCB_STAT_DEQ_EMPTY     DS    F
+0000040C                                     105=QCB_STAT_ENQ_ALLOC_FAIL DS   F
+00000410                                     106=QCB_STAT_ENQ_RETRY     DS    F
+00000414                                     107=QCB_STAT_DEQ_RETRY     DS    F
+00000418                                     108=QCB_STAT_FREELIST_POP_RETRY DS F
+0000041C                                     109=QCB_STAT_FREELIST_PUSH_RETRY DS F
+00000420                                     110=QCB_STAT_QDEPTH_CUR    DS    F
+00000424                                     111=QCB_STAT_QDEPTH_MAX    DS    F
+00000428                                     112=QCB_STAT_PAYLOAD64_CUR_HI DS F
+0000042C                                     113=QCB_STAT_PAYLOAD64_CUR_LO DS F
+00000430                                     114=QCB_STAT_PAYLOAD64_MAX_HI DS F
+00000434                                     115=QCB_STAT_PAYLOAD64_MAX_LO DS F
+00000438                                     116=QCB_STAT_POST_INTERNAL DS   F
+0000043C                                     117=QCB_STAT_POST_USERECB  DS   F
+00000440                                     118=QCB_STAT_CB_CALLS      DS   F
+00000444                                     119=QCB_STAT_CB_PENDING_MAX DS  F
+00000448                00000448 00000500    120=                       ORG   MPMCQ_QCB+1280
+00000500                                     121=                       DS    0D
+00000500                                     122=QCB_TLS                DS    A
+00000504                                     123=                       DS    F
+00000508                                     124=QCB_POOL               DS    6D
+                        00000538             125=QCB_SIZE               EQU   *-MPMCQ_QCB
+                                             126=*
+00000000                00000000 00000500    127=MPMCQ_NODE             DSECT
+00000000                                     128=                       DS    0D
+00000000                                     129=NODE_CNT_INT           DS    F
+00000004                                     130=NODE_CNT_EXT           DS    F
+00000008                                     131=NODE_NEXT_ABA          DS    F
+0000000C                                     132=NODE_NEXT_PTR          DS    F
+00000010                                     133=NODE_PAYLOAD64         DS    D
+00000018                                     134=NODE_PAYLOAD_LEN       DS    F
+0000001C                                     135=NODE_RSVD              DS    F
+00000020                00000020 00000100    136=                       ORG   MPMCQ_NODE+256
+00000100                                     137=NODE_INLINE            DS    CL1024
+                        00000400             138=NODE_INLINE_MAX        EQU   1024
+                        00000001             139=NODE_F_INLINE          EQU   1
+                        00000500             140=NODE_SIZE              EQU   *-MPMCQ_NODE
+                                             141=*
+00000000                00000000 00000050    142=MPMCQ_STATS            DSECT
+00000000                                     143=STATS_VERSION          DS    F
+00000004                                     144=STATS_SIZE             DS    F
+00000008                                     145=STATS_ENQ_OK           DS    F
+0000000C                                     146=STATS_DEQ_OK           DS    F
+00000010                                     147=STATS_DEQ_EMPTY        DS    F
+00000014                                     148=STATS_ENQ_ALLOC_FAIL   DS    F
+00000018                                     149=STATS_ENQ_RETRY        DS    F
+0000001C                                     150=STATS_DEQ_RETRY        DS    F
+i00000020                                     151=STATS_FREELIST_POP_RETRY DS  F
+         DSECTS - QCB, NODE, STATS                                                                             Page    9
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000024                                     152=STATS_FREELIST_PUSH_RETRY DS F
+00000028                                     153=STATS_QDEPTH_CUR       DS    F
+0000002C                                     154=STATS_QDEPTH_MAX       DS    F
+00000030                                     155=STATS_PAYLOAD64_CUR    DS    D
+00000038                                     156=STATS_PAYLOAD64_MAX    DS    D
+00000040                                     157=STATS_POST_INTERNAL    DS    F
+00000044                                     158=STATS_POST_USERECB     DS    F
+00000048                                     159=STATS_CB_CALLS         DS    F
+0000004C                                     160=STATS_CB_PENDING_MAX   DS    F
+                        00000050             161=STATS_END              EQU   *
+i                                             162          COPY  API
+         API - CALLING CONVENTION                                                                              Page   10
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             164=***********************************************************************
+                                             165=*  API.INC
+                                             166=*  COPY DSECTS FIRST. QCB_SIZE_PUB MUST EQUAL QCB_SIZE.
+                                             167=*  PAY31_MAX IS THE 31-BIT SLAB CAP (POOL_64K). ABOVE IT: IARV64.
+                                             168=*  PAY64_MAX IS ONE MVCL (24-BIT LENGTH).
+                                             169=*  RC_ALIGN (12) MEANS THE QCB IS NOT 256-BYTE ALIGNED.
+                                             170=***********************************************************************
+                        00010000             171=PAY31_MAX EQU   65536
+                        00FFFFFF             172=PAY64_MAX EQU   X'00FFFFFF'
+                        00000100             173=QCB_ALIGN EQU   256
+                        00000000             174=RC_OK     EQU   0
+                        00000004             175=RC_EMPTY  EQU   4
+                        00000008             176=RC_ALLOC  EQU   8
+                        00000008             177=RC_TRUNC  EQU   8
+                        0000000C             178=RC_ALIGN  EQU   12
+                        00000538             179=QCB_SIZE_PUB EQU 1336
+                                             180=         AIF   (PAY31_MAX EQ POOL_64K).APIP31
+                                             181=.APIP31  ANOP
+                        80000000             182=QCBF_STOP EQU   X'80000000'
+                                             183=         AIF   (QCB_SIZE EQ QCB_SIZE_PUB).APIQOK
+                                             184=.APIQOK  ANOP
+                                             185=*
+00000000                00000000 00000018    186=MPMCQ_QINIT_PLIST DSECT
+00000000                                     187=QINIT_QCBADDR     DS    F
+00000004                                     188=QINIT_OPTIONS     DS    F
+00000008                                     189=QINIT_INITPOOL    DS    F
+0000000C                                     190=QINIT_CB_EP       DS    F
+00000010                                     191=QINIT_CB_CTX      DS    F
+00000014                                     192=QINIT_USER_ECB    DS    F
+                                             193=*
+00000000                00000000 0000000C    194=MPMCQ_QENQ_PLIST  DSECT
+00000000                                     195=ENQ_QCBADDR       DS    F
+00000004                                     196=ENQ_SRCADDR       DS    F
+00000008                                     197=ENQ_SRCLEN        DS    F
+                                             198=*
+00000000                00000000 00000010    199=MPMCQ_QDEQ_PLIST  DSECT
+00000000                                     200=DEQ_QCBADDR       DS    F
+00000004                                     201=DEQ_DSTADDR       DS    F
+00000008                                     202=DEQ_DSTMAX        DS    F
+0000000C                                     203=DEQ_OUTLENADDR    DS    F
+                                             204=*
+00000000                00000000 0000000C    205=MPMCQ_QSTATS_PLIST DSECT
+00000000                                     206=QST_QCBADDR       DS    F
+00000004                                     207=QST_OUTADDR       DS    F
+00000008                                     208=QST_OUTLEN        DS    F
+                                             209=*
+00000000                00000000 00000004    210=MPMCQ_STOP_PL     DSECT
+00000000                                     211=QSTOP_QCB         DS    F
+                                             212=*
+00000000                00000000 0000000C    213=MPMCQ_CB_PLIST    DSECT
+00000000                                     214=CBP_CTX           DS    F
+00000004                                     215=CBP_QCB           DS    F
+00000008                                     216=CBP_PENDING       DS    F
+i                                             217          COPY  LINKAGE
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   11
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             219=***********************************************************************
+                                             220=*  LINKAGE.MAC
+                                             221=*  COPY REGS FIRST (SAVL, R0-R15).
+                                             222=*  QLEAF  - SAVE INTO CALLER SAVE AREA. PLIST LEFT IN R11.
+                                             223=*           OPTIONAL &BASE: LARL SETS R12 TO CSECT BASE.
+                                             224=*           WITHOUT &BASE: R12 IS TAKEN FROM R15.
+                                             225=*  QLEAVER- RETURN. R0, R1, AND R15 PRESERVED AS CALLER SET THEM.
+                                             226=*  QLEAVER89 - RETURN R15 PLUS R8/R9 IN BITS 32-63.
+                                             227=*  QENTER - CALLER SAVE AREA CHAINING VIA GETMAIN.
+                                             228=*  QLEAVE - FREEMAIN SAVE AREA AND RETURN R15.
+                                             229=*  QLEAVE89 - FREEMAIN SAVE AREA AND RETURN R15 + R8/R9.
+                                             230=***********************************************************************
+                                             231=         MACRO
+                                             232=&LBL     QLEAF &BASE
+                                             233=&LBL     STM   R14,R12,12(R13)
+                                             234=         LARL  R12,&BASE
+                                             235=         LR    R11,R1
+                                             236=         MEND
+                                             237=*
+                                             238=         MACRO
+                                             239=&LBL     QLEAVER
+                                             240=&LBL     L     R14,12(R13)
+                                             241=         LM    R2,R12,28(R13)
+                                             242=         BR    R14
+                                             243=         MEND
+                                             244=*
+                                             245=         MACRO
+                                             246=&LBL     QLEAVER89
+                                             247=&LBL     L     R14,12(R13)
+                                             248=         LM    R2,R7,28(R13)
+                                             249=         LM    R10,R12,60(R13)
+                                             250=         LLGFR R8,R8
+                                             251=         LLGFR R9,R9
+                                             252=         BR    R14
+                                             253=         MEND
+                                             254=*
+                                             255=         MACRO
+                                             256=&LBL     QENTER &BASE
+                                             257=&LBL     STM   R14,R12,12(R13)
+                                             258=         LARL  R12,&BASE
+                                             259=         LHI   R0,SAVL
+                                             260=         GETMAIN R,LV=(0)
+                                             261=         LR    R10,R1
+                                             262=         XC    0(SAVL,R10),0(R10)
+                                             263=         ST    R13,4(R10)
+                                             264=         ST    R10,8(R13)
+                                             265=         L     R11,24(R13)
+                                             266=         LR    R13,R10
+                                             267=         MEND
+                                             268=*
+                                             269=         MACRO
+                                             270=&LBL     QLEAVE
+                                             271=&LBL     LR    R1,R13
+                                             272=         L     R13,4(R13)
+i                                             273=         ST    R15,16(R13)
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   12
+  Active Usings: None
+D-Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             274=         LHI   R0,SAVL
+                                             275=         FREEMAIN R,LV=(0),A=(1)
+                                             276=         L     R15,16(R13)
+                                             277=         L     R14,12(R13)
+                                             278=         LM    R2,R12,28(R13)
+                                             279=         BR    R14
+                                             280=         MEND
+                                             281=*
+                                             282=         MACRO
+                                             283=&LBL     QLEAVE89
+                                             284=&LBL     LR    R1,R13
+                                             285=         L     R13,4(R13)
+                                             286=         ST    R15,16(R13)
+                                             287=         LHI   R0,SAVL
+                                             288=         FREEMAIN R,LV=(0),A=(1)
+                                             289=         LM    R2,R7,28(R13)
+                                             290=         LM    R10,R12,60(R13)
+                                             291=         L     R15,16(R13)
+                                             292=         L     R14,12(R13)
+                                             293=         LLGFR R8,R8
+                                             294=         LLGFR R9,R9
+                                             295=         BR    R14
+                                             296=         MEND
+                                             297 *
+00000000                00000000 000004D0    298 MPMCQSTO CSECT
+                                             299 MPMCQSTO AMODE 31
+                                             300 MPMCQSTO RMODE ANY
+                    R:2 00000000             301          USING MPMCQ_QCB,R2
+                                             302 *
+                                             303          ENTRY MPMCQ_PAYGET
+                                             304          ENTRY MPMCQ_PAYFREE
+                                             305 *
+00000000                                     306 MPMCQ_PAYGET     DS    0H
+00000000 90EC D00C               0000000C    307          STM   R14,R12,12(R13)  SAVE CALLER REGISTERS
+00000004 C0C0 FFFF FFFE          00000000    308          LARL  R12,MPMCQ_PAYGET  LOAD RELATIVE ADDRESS
+                    R:C 00000000             309          USING MPMCQ_PAYGET,R12
+0000000A 18B1                                310          LR    R11,R1  COPY REGISTER
+0000000C 1277                                311          LTR   R7,R7  COMPARE OR TEST
+0000000E A784 0025               00000058    312          JZ    PAYZ  BRANCH IF ZERO
+00000012 C27F 0001 0000                      313          CLFI  R7,PAY31_MAX  COMPARE OR TEST
+00000018 A724 0025               00000062    314          JH    PAY64  BRANCH IF HIGH
+0000001C C0F0 0000 010C          00000234    315          LARL  R15,CLASIFY  LOAD RELATIVE ADDRESS
+00000022 05EF                                316          BALR  R14,R15  CALL AND SET RETURN
+00000024 8930 0003               00000003    317          SLL   R3,3  TIMES 4 FOR INDEX
+                                             318 *  ADDRESS SIZE-CLASS HEAD
+00000028 4143 2508               00000508    319          LA    R4,QCB_POOL-MPMCQ_QCB(R3,R2)  ADDRESS SIZE-CLASS HEAD
+0000002C 186F                                320          LR    R6,R15  COPY REGISTER
+0000002E C0F0 0000 0140          000002AE    321          LARL  R15,POOLPOP  LOAD RELATIVE ADDRESS
+00000034 05EF                                322          BALR  R14,R15  CALL AND SET RETURN
+00000036 1211                                323          LTR   R1,R1  COMPARE OR TEST
+00000038 A774 000B               0000004E    324          JNZ   PAYGOT  BRANCH IF NOT ZERO
+0000003C 1806                                325          LR    R0,R6  COPY REGISTER
+                                             326          GETMAIN R,LV=(0)  OBTAIN STORAGE
+0000003E 4510 C042               00000042    328+         BAL   1,*+4                   INDICATE GETMAIN        @Z30EN9G 01-GETMAIN
+i00000042 0A0A                                329+         SVC   10                      ISSUE GETMAIN SVC                01-GETMAIN
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   13
+  Active Usings: MPMCQ_QCB,R2  MPMCQ_PAYGET,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000044 1891                                330          LR    R9,R1  COPY REGISTER
+00000046 1788                                331          XR    R8,R8  CLEAR REGISTER
+00000048 17FF                                332          XR    R15,R15  CLEAR REGISTER
+0000004A A7F4 007A               0000013E    333          J     PAYRET  BRANCH
+0000004E                                     334 PAYGOT   DS    0H
+0000004E 1891                                335          LR    R9,R1  COPY REGISTER
+00000050 1788                                336          XR    R8,R8  CLEAR REGISTER
+00000052 17FF                                337          XR    R15,R15  CLEAR REGISTER
+00000054 A7F4 0075               0000013E    338          J     PAYRET  BRANCH
+00000058                                     339 PAYZ     DS    0H
+00000058 1788                                340          XR    R8,R8  CLEAR REGISTER
+0000005A 1799                                341          XR    R9,R9  CLEAR REGISTER
+0000005C 17FF                                342          XR    R15,R15  CLEAR REGISTER
+0000005E A7F4 0070               0000013E    343          J     PAYRET  BRANCH
+00000062                                     344 PAY64    DS    0H
+00000062 C009 0000 00B0                      345          IILF  R0,GET64_TLEN  LOAD IMMEDIATE
+00000068 A70A 0007                           346          AHI   R0,7  ROUND UP
+0000006C C00B FFFF FFF8                      347          NILF  R0,X'FFFFFFF8'  ROUND LENGTH TO 8
+00000072 1860                                348          LR    R6,R0  COPY REGISTER
+00000074 A70A 0010                           349          AHI   R0,16  COUNT PLUS ONE
+                                             350          GETMAIN R,LV=(0)  OBTAIN STORAGE
+00000078 4510 C07C               0000007C    352+         BAL   1,*+4                   INDICATE GETMAIN        @Z30EN9G 01-GETMAIN
+0000007C 0A0A                                353+         SVC   10                      ISSUE GETMAIN SVC                01-GETMAIN
+0000007E 18A1                                354          LR    R10,R1  COPY REGISTER
+00000080 50AD 0000               00000000    355          ST    R10,0(R13)  KEEP PLIST POINTER
+00000084 180A                                356          LR    R0,R10  COPY REGISTER
+00000086 1816                                357          LR    R1,R6  COPY REGISTER
+00000088 C0E0 0000 0174          00000370    358          LARL  R14,GET64T  LOAD RELATIVE ADDRESS
+0000008E 18F6                                359          LR    R15,R6  COPY REGISTER
+00000090 0E0E                                360          MVCL  R0,R14  MOVE OR CLEAR BYTES
+00000092 4136 A000               00000000    361          LA    R3,0(R6,R10)  FORM AN ADDRESS
+00000096 1744                                362          XR    R4,R4  CLEAR REGISTER
+00000098 1857                                363          LR    R5,R7  COPY REGISTER
+0000009A C029 000F FFFF                      364          IILF  R2,X'000FFFFF'  ROUND UP TO 1MB
+000000A0 1E52                                365          ALR   R5,R2  ADD REGISTERS
+000000A2 8850 0014               00000014    366          SRL   R5,20  SHIFT TCB FOR HASH
+000000A6 5043 0000               00000000    367          ST    R4,0(R3)  STORE FULLWORD
+000000AA 5053 0004               00000004    368          ST    R5,4(R3)  CHAIN SAVE AREA
+000000AE 4143 0008               00000008    369          LA    R4,8(R3)  FORM AN ADDRESS
+000000B2 581D 0000               00000000    370          L     R1,0(R13)  RELOAD SAVED PLIST
+                                             371 *  OBTAIN 64-BIT STORAGE
+                                             372          IARV64 REQUEST=GETSTOR,COND=YES,SEGMENTS=(R3),                X
+                                                                ORIGIN=(R4),FPROT=NO,PLISTVER=MAX,MF=(E,(R1))
+                                             373+*                     MACDATE -01/08/26-<6>
+000000B6                                     374+M00M0005 DS    0H                             IARV64-6                  01-IARV64
+                                             375+              PUSH  PRINT                                               01-IARV64
+                                             376+                     PRINT ON                                           01-IARV64
+000000B6 D7AF 1000 1000 00000000 00000000    377+         XC    0(176,1),0(1)      ++ INITIALIZE                         01-IARV64
+000000BC 9206 1000      00000000             378+         MVI   0(1),6             ++ INPUT XVERSION XL1                 01-IARV64
+000000C0 9201 1001      00000001             379+         MVI   1(1),1             ++ INPUT XREQUEST                     01-IARV64
+000000C4 96C0 1005      00000005             380+         OI    5(1),B'11000000'   ++ INPUT BL1                          01-IARV64
+000000C8 D207 1008 3000 00000008 00000000    381+         MVC   8(8,1),0(R3)       ++ INPUT XSEGMENTS                    01-IARV64
+000000CE D200 1078 C368 00000078 00000368    382+         MVC   120(1,1),=AL1(99)  ++ INPUT XDUMPPRIORITY                01-IARV64
+000000D4 9620 1079      00000079             383+         OI    121(1),B'00100000' ++ INPUT BL1                          01-IARV64
+i000000D8 9220 107C      0000007C             384+         MVI   124(1),32          ++ INPUT XDUMP                        01-IARV64
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   14
+  Active Usings: MPMCQ_QCB,R2  MPMCQ_PAYGET,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+000000DC 58E0 0010               00000010    385+         L     14,16(0,0)        GET CVT ADDRESS                        01-IARV64
+000000E0 58EE 0304               00000304    386+         L     14,772(14,0)      GET SYSTEM FUNCTION TABLE ADDRESS      01-IARV64
+000000E4 58EE 00D0               000000D0    387+         L     14,208(14,0)      GET LX/EX FOR SERVICE ROUTINE          01-IARV64
+000000E8 41F0 000E               0000000E    388+         LA    15,14             EX OFFSET FOR IARV64 ASSIGN            01-IARV64
+000000EC 16EF                                389+         OR    14,15             GENERATE LX/EX COMBINATION             01-IARV64
+000000EE B218 E000      00000000             390+         PC    0(14)             PC TO IARV64 SERVICE                   01-IARV64
+000000F2 D207 4000 1028 00000000 00000028    391+         MVC   0(8,R4),40(1)      ++ XORIGIN AL8                        01-IARV64
+                                             392+         POP   PRINT                                                    01-IARV64
+                                             393+*                                            IARV64-6
+000000F8 185F                                395          LR    R5,R15  COPY REGISTER
+000000FA E383 0008 0004          00000008    396          LG    R8,8(R3)  LOAD DOUBLEWORD
+00000100 B904 0098                           397          LGR   R9,R8  COPY REGISTER
+00000104 EB88 0020 000C          00000020    398          SRLG  R8,R8,32  SHIFT ABA TO LOW HALF
+0000010A 58AD 0000               00000000    399          L     R10,0(R13)  RELOAD SAVED PLIST
+0000010E C009 0000 00B0                      400          IILF  R0,GET64_TLEN  LOAD IMMEDIATE
+00000114 A70A 0007                           401          AHI   R0,7  ROUND UP
+00000118 C00B FFFF FFF8                      402          NILF  R0,X'FFFFFFF8'  ROUND LENGTH TO 8
+0000011E A70A 0010                           403          AHI   R0,16  COUNT PLUS ONE
+00000122 181A                                404          LR    R1,R10  COPY REGISTER
+                                             405          FREEMAIN R,LV=(0),A=(1)  RELEASE WORK AREA
+00000124 4110 1000               00000000    407+         LA    1,0(0,1)                          LOAD AREA ADDRESS      01-FREEMAIN
+00000128 0A0A                                408+         SVC   10                                ISSUE FREEMAIN SVC     01-FREEMAIN
+0000012A 1255                                409          LTR   R5,R5  COMPARE OR TEST
+0000012C A784 0008               0000013C    410          JZ    PAYOK  BRANCH IF ZERO
+00000130 1788                                411          XR    R8,R8  CLEAR REGISTER
+00000132 1799                                412          XR    R9,R9  CLEAR REGISTER
+00000134 A7F8 0008                           413          LHI   R15,8  RETURN CODE 8
+00000138 A7F4 0003               0000013E    414          J     PAYRET  BRANCH
+0000013C                                     415 PAYOK    DS    0H
+0000013C 17FF                                416          XR    R15,R15  CLEAR REGISTER
+0000013E                                     417 PAYRET   DS    0H
+                                             418          QLEAVER89  RETURN RC AND ADDR HALVES
+0000013E 58ED 000C               0000000C    419+         L     R14,12(R13)                                              01-00000247
+00000142 9827 D01C               0000001C    420+         LM    R2,R7,28(R13)                                            01-00000248
+00000146 98AC D03C               0000003C    421+         LM    R10,R12,60(R13)                                          01-00000249
+0000014A B916 0088                           422+         LLGFR R8,R8                                                    01-00000250
+0000014E B916 0099                           423+         LLGFR R9,R9                                                    01-00000251
+00000152 07FE                                424+         BR    R14                                                      01-00000252
+                                             425          DROP  R12
+                                             426 *
+00000154                                     427 MPMCQ_PAYFREE    DS    0H
+00000154 90EC D00C               0000000C    428          STM   R14,R12,12(R13)  SAVE CALLER REGISTERS
+00000158 C0C0 FFFF FFFE          00000154    429          LARL  R12,MPMCQ_PAYFREE  LOAD RELATIVE ADDRESS
+                    R:C 00000154             430          USING MPMCQ_PAYFREE,R12
+0000015E 18B1                                431          LR    R11,R1  COPY REGISTER
+00000160 1277                                432          LTR   R7,R7  COMPARE OR TEST
+00000162 A784 0063               00000228    433          JZ    FRERET  BRANCH IF ZERO
+00000166 C27F 0001 0000                      434          CLFI  R7,PAY31_MAX  COMPARE OR TEST
+0000016C A724 0015               00000196    435          JH    FRE64  BRANCH IF HIGH
+00000170 E38B 0000 0004          00000000    436          LG    R8,0(R11)  LOAD DOUBLEWORD
+00000176 B916 0058                           437          LLGFR R5,R8  KEEP LOW 32 BITS
+0000017A C0F0 0000 005D          00000234    438          LARL  R15,CLASIFY  LOAD RELATIVE ADDRESS
+00000180 05EF                                439          BALR  R14,R15  CALL AND SET RETURN
+i00000182 8930 0003               00000003    440          SLL   R3,3  TIMES 4 FOR INDEX
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   15
+  Active Usings: MPMCQ_QCB,R2  MPMCQ_PAYFREE,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                                             441 *  ADDRESS SIZE-CLASS HEAD
+00000186 4143 2508               00000508    442          LA    R4,QCB_POOL-MPMCQ_QCB(R3,R2)  ADDRESS SIZE-CLASS HEAD
+0000018A C0F0 0000 00C3          00000310    443          LARL  R15,POOLPSH  LOAD RELATIVE ADDRESS
+00000190 05EF                                444          BALR  R14,R15  CALL AND SET RETURN
+00000192 A7F4 004B               00000228    445          J     FRERET  BRANCH
+00000196                                     446 FRE64    DS    0H
+00000196 C009 0000 00B0                      447          IILF  R0,FREE64_TLEN  LOAD IMMEDIATE
+0000019C A70A 0007                           448          AHI   R0,7  ROUND UP
+000001A0 C00B FFFF FFF8                      449          NILF  R0,X'FFFFFFF8'  ROUND LENGTH TO 8
+000001A6 1860                                450          LR    R6,R0  COPY REGISTER
+000001A8 A70A 0008                           451          AHI   R0,8  ADD PARM WORD
+                                             452          GETMAIN R,LV=(0)  OBTAIN STORAGE
+000001AC 4510 C05C               000001B0    454+         BAL   1,*+4                   INDICATE GETMAIN        @Z30EN9G 01-GETMAIN
+000001B0 0A0A                                455+         SVC   10                      ISSUE GETMAIN SVC                01-GETMAIN
+000001B2 18A1                                456          LR    R10,R1  COPY REGISTER
+000001B4 50AD 0000               00000000    457          ST    R10,0(R13)  KEEP PLIST POINTER
+000001B8 180A                                458          LR    R0,R10  COPY REGISTER
+000001BA 1816                                459          LR    R1,R6  COPY REGISTER
+000001BC C0E0 0000 0132          00000420    460          LARL  R14,FREE64T  LOAD RELATIVE ADDRESS
+000001C2 18F6                                461          LR    R15,R6  COPY REGISTER
+000001C4 0E0E                                462          MVCL  R0,R14  MOVE OR CLEAR BYTES
+000001C6 4136 A000               00000000    463          LA    R3,0(R6,R10)  FORM AN ADDRESS
+000001CA E38B 0000 0004          00000000    464          LG    R8,0(R11)  LOAD DOUBLEWORD
+000001D0 E383 0000 0024          00000000    465          STG   R8,0(R3)  STORE 64-BIT ORIGIN  STORE DOUBLEWORD
+000001D6 581D 0000               00000000    466          L     R1,0(R13)  RELOAD SAVED PLIST
+                                             467 *  DETACH 64-BIT OBJECT
+                                             468          IARV64 REQUEST=DETACH,COND=YES,MEMOBJSTART=(R3),              X
+                                                                PLISTVER=MAX,MF=(E,(R1))
+                                             469+*                     MACDATE -01/08/26-<6>
+000001DA                                     470+M00M0011 DS    0H                             IARV64-6                  01-IARV64
+                                             471+              PUSH  PRINT                                               01-IARV64
+                                             472+                     PRINT ON                                           01-IARV64
+000001DA D7AF 1000 1000 00000000 00000000    473+         XC    0(176,1),0(1)      ++ INITIALIZE                         01-IARV64
+000001E0 9206 1000      00000000             474+         MVI   0(1),6             ++ INPUT XVERSION XL1                 01-IARV64
+000001E4 9203 1001      00000001             475+         MVI   1(1),3             ++ INPUT XREQUEST                     01-IARV64
+000001E8 9680 1005      00000005             476+         OI    5(1),B'10000000'   ++ INPUT BL1                          01-IARV64
+000001EC D207 1038 3000 00000038 00000000    477+         MVC   56(8,1),0(R3)      ++ INPUT XMEMOBJSTART                 01-IARV64
+000001F2 58E0 0010               00000010    478+         L     14,16(0,0)        GET CVT ADDRESS                        01-IARV64
+000001F6 58EE 0304               00000304    479+         L     14,772(14,0)      GET SYSTEM FUNCTION TABLE ADDRESS      01-IARV64
+000001FA 58EE 00D0               000000D0    480+         L     14,208(14,0)      GET LX/EX FOR SERVICE ROUTINE          01-IARV64
+000001FE 41F0 000E               0000000E    481+         LA    15,14             EX OFFSET FOR IARV64 ASSIGN            01-IARV64
+00000202 16EF                                482+         OR    14,15             GENERATE LX/EX COMBINATION             01-IARV64
+00000204 B218 E000      00000000             483+         PC    0(14)             PC TO IARV64 SERVICE                   01-IARV64
+                                             484+         POP   PRINT                                                    01-IARV64
+                                             485+*                                            IARV64-6
+00000208 58AD 0000               00000000    487          L     R10,0(R13)  RELOAD SAVED PLIST
+0000020C C009 0000 00B0                      488          IILF  R0,FREE64_TLEN  LOAD IMMEDIATE
+00000212 A70A 0007                           489          AHI   R0,7  ROUND UP
+00000216 C00B FFFF FFF8                      490          NILF  R0,X'FFFFFFF8'  ROUND LENGTH TO 8
+0000021C A70A 0008                           491          AHI   R0,8  ADD PARM WORD
+00000220 181A                                492          LR    R1,R10  COPY REGISTER
+                                             493          FREEMAIN R,LV=(0),A=(1)  RELEASE WORK AREA
+00000222 4110 1000               00000000    495+         LA    1,0(0,1)                          LOAD AREA ADDRESS      01-FREEMAIN
+i00000226 0A0A                                496+         SVC   10                                ISSUE FREEMAIN SVC     01-FREEMAIN
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   16
+  Active Usings: MPMCQ_QCB,R2  MPMCQ_PAYFREE,R12
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000228                                     497 FRERET   DS    0H
+00000228 17FF                                498          XR    R15,R15  CLEAR REGISTER
+                                             499          QLEAVER  RESTORE REGS AND RETURN
+0000022A 58ED 000C               0000000C    500+         L     R14,12(R13)                                              01-00000240
+0000022E 982C D01C               0000001C    501+         LM    R2,R12,28(R13)                                           01-00000241
+00000232 07FE                                502+         BR    R14                                                      01-00000242
+                                             503          DROP  R12
+                                             504 *
+                                             505 * R7=LEN. R3=CLASS INDEX. R15=SLAB BYTES. PRESERVES R2,R4-R13.
+00000234                                     506 CLASIFY  DS    0H
+00000234 C27F 0000 0800                      507          CLFI  R7,POOL_2K  COMPARE OR TEST
+0000023A A7D4 001C               00000272    508          JNH   CL0  BRANCH IF NOT HIGH
+0000023E C27F 0000 1000                      509          CLFI  R7,POOL_4K  COMPARE OR TEST
+00000244 A7D4 001D               0000027E    510          JNH   CL1  BRANCH IF NOT HIGH
+00000248 C27F 0000 2000                      511          CLFI  R7,POOL_8K  COMPARE OR TEST
+0000024E A7D4 001E               0000028A    512          JNH   CL2  BRANCH IF NOT HIGH
+00000252 C27F 0000 4000                      513          CLFI  R7,POOL_16K  COMPARE OR TEST
+00000258 A7D4 001F               00000296    514          JNH   CL3  BRANCH IF NOT HIGH
+0000025C C27F 0000 8000                      515          CLFI  R7,POOL_32K  COMPARE OR TEST
+00000262 A7D4 0020               000002A2    516          JNH   CL4  BRANCH IF NOT HIGH
+00000266 A738 0005                           517          LHI   R3,5  LOAD HALFWORD
+0000026A C0F9 0001 0000                      518          IILF  R15,65536  LOAD IMMEDIATE
+00000270 07FE                                519          BR    R14  RETURN TO CALLER
+00000272                                     520 CL0      DS    0H
+00000272 A738 0000                           521          LHI   R3,0  LOAD HALFWORD
+00000276 C0F9 0000 0800                      522          IILF  R15,2048  LOAD IMMEDIATE
+0000027C 07FE                                523          BR    R14  RETURN TO CALLER
+0000027E                                     524 CL1      DS    0H
+0000027E A738 0001                           525          LHI   R3,1  PLUS ONE
+00000282 C0F9 0000 1000                      526          IILF  R15,4096  LOAD IMMEDIATE
+00000288 07FE                                527          BR    R14  RETURN TO CALLER
+0000028A                                     528 CL2      DS    0H
+0000028A A738 0002                           529          LHI   R3,2  LOAD HALFWORD
+0000028E C0F9 0000 2000                      530          IILF  R15,8192  LOAD IMMEDIATE
+00000294 07FE                                531          BR    R14  RETURN TO CALLER
+00000296                                     532 CL3      DS    0H
+00000296 A738 0003                           533          LHI   R3,3  LOAD HALFWORD
+0000029A C0F9 0000 4000                      534          IILF  R15,16384  LOAD IMMEDIATE
+000002A0 07FE                                535          BR    R14  RETURN TO CALLER
+000002A2                                     536 CL4      DS    0H
+000002A2 A738 0004                           537          LHI   R3,4  LOAD HALFWORD
+000002A6 C0F9 0000 8000                      538          IILF  R15,32768  LOAD IMMEDIATE
+000002AC 07FE                                539          BR    R14  RETURN TO CALLER
+                                             540 *
+                                             541 * R4->FREELIST DOUBLEWORD. R1=SLAB OR 0. PRESERVES R4,R6,R7,R10-R13.
+                                             542 * THE NEXT WORD IS LOADED, THEN THE HEAD IS REREAD. A CHANGED HEAD
+                                             543 * RETRIES. THE CDS IS NOT ATTEMPTED ON THAT STALE NEXT POINTER.
+                                             544 * THE LINK ABA IN THE SLAB IS NOT THE FREELIST TAG. POP BUILDS THE
+                                             545 * NEW HEAD TAG FROM THE OBSERVED HEAD TAG PLUS ONE.
+000002AE                                     546 POOLPOP  DS    0H
+000002AE E304 0000 0004          00000000    547          LG    R0,0(R4)  LOAD DOUBLEWORD
+000002B4                                     548 POOLPH   DS    0H
+000002B4 1810                                549          LR    R1,R0  COPY REGISTER
+000002B6 1211                                550          LTR   R1,R1  COMPARE OR TEST
+i000002B8 A784 0029               0000030A    551          JZ    POOLPE  BRANCH IF ZERO
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   17
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+000002BC 5881 0004               00000004    552          L     R8,4(R1)  LOAD NEXT SLAB POINTER
+000002C0 E334 0000 0004          00000000    553          LG    R3,0(R4)  LOAD DOUBLEWORD
+000002C6 B920 0030                           554          CGR   R3,R0  COMPARE OR TEST
+000002CA A784 0006               000002D6    555          JE    POOLPS  BRANCH IF EQUAL
+000002CE B904 0003                           556          LGR   R0,R3  COPY REGISTER
+000002D2 A7F4 FFF1               000002B4    557          J     POOLPH  BRANCH
+000002D6                                     558 POOLPS   DS    0H
+000002D6 1898                                559          LR    R9,R8  COPY REGISTER
+000002D8 1831                                560          LR    R3,R1  COPY REGISTER
+000002DA 1810                                561          LR    R1,R0  COPY REGISTER
+000002DC EB00 0020 000C          00000020    562          SRLG  R0,R0,32  SHIFT ABA TO LOW HALF
+000002E2 1880                                563          LR    R8,R0  COPY REGISTER
+000002E4 C28B 0000 0001                      564          ALFI  R8,1  ADD ONE TO ABA
+000002EA BB08 4000               00000000    565          CDS   R0,R8,0(R4)  COMPARE AND SWAP PAIR
+000002EE A784 000B               00000304    566          JE    POOLPK  BRANCH IF EQUAL
+000002F2 EB00 0020 000D          00000020    567          SLLG  R0,R0,32  SHIFT HALF TO HIGH
+000002F8 B916 0011                           568          LLGFR R1,R1  KEEP LOW 32 BITS
+000002FC B90A 0001                           569          ALGR  R0,R1  ADD REGISTERS
+00000300 A7F4 FFDA               000002B4    570          J     POOLPH  BRANCH
+00000304                                     571 POOLPK   DS    0H
+00000304 1813                                572          LR    R1,R3  COPY REGISTER
+00000306 17FF                                573          XR    R15,R15  CLEAR REGISTER
+00000308 07FE                                574          BR    R14  RETURN TO CALLER
+0000030A                                     575 POOLPE   DS    0H
+0000030A 1711                                576          XR    R1,R1  CLEAR REGISTER
+0000030C 17FF                                577          XR    R15,R15  CLEAR REGISTER
+0000030E 07FE                                578          BR    R14  RETURN TO CALLER
+                                             579 *
+                                             580 * R4->FREELIST, R5=SLAB. PRESERVES R4,R5,R6,R7,R10-R13.
+                                             581 * 0(R5) IS NOT USED AS A TAG. THE HEAD ABA COMES FROM THE HEAD.
+00000310                                     582 POOLPSH  DS    0H
+00000310 E304 0000 0004          00000000    583          LG    R0,0(R4)  LOAD DOUBLEWORD
+00000316                                     584 POOLSH   DS    0H
+00000316 1733                                585          XR    R3,R3  CLEAR REGISTER
+00000318 5035 0000               00000000    586          ST    R3,0(R5)  STORE FULLWORD
+0000031C 1810                                587          LR    R1,R0  COPY REGISTER
+0000031E 5015 0004               00000004    588          ST    R1,4(R5)  STORE NEXT SLAB POINTER
+00000322 E384 0000 0004          00000000    589          LG    R8,0(R4)  LOAD DOUBLEWORD
+00000328 B920 0080                           590          CGR   R8,R0  COMPARE OR TEST
+0000032C A784 0006               00000338    591          JE    POOLSS  BRANCH IF EQUAL
+00000330 B904 0008                           592          LGR   R0,R8  COPY REGISTER
+00000334 A7F4 FFF1               00000316    593          J     POOLSH  BRANCH
+00000338                                     594 POOLSS   DS    0H
+00000338 1810                                595          LR    R1,R0  COPY REGISTER
+0000033A EB00 0020 000C          00000020    596          SRLG  R0,R0,32  SHIFT ABA TO LOW HALF
+00000340 1880                                597          LR    R8,R0  COPY REGISTER
+00000342 C28B 0000 0001                      598          ALFI  R8,1  ADD ONE TO ABA
+00000348 1895                                599          LR    R9,R5  COPY REGISTER
+0000034A BB08 4000               00000000    600          CDS   R0,R8,0(R4)  COMPARE AND SWAP PAIR
+0000034E A784 000B               00000364    601          JE    POOLSK  BRANCH IF EQUAL
+00000352 EB00 0020 000D          00000020    602          SLLG  R0,R0,32  SHIFT HALF TO HIGH
+00000358 B916 0011                           603          LLGFR R1,R1  KEEP LOW 32 BITS
+0000035C B90A 0001                           604          ALGR  R0,R1  ADD REGISTERS
+00000360 A7F4 FFDB               00000316    605          J     POOLSH  BRANCH
+i00000364                                     606 POOLSK   DS    0H
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   18
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000364 17FF                                607          XR    R15,R15  CLEAR REGISTER
+00000366 07FE                                608          BR    R14  RETURN TO CALLER
+                                             609 *
+00000368                                     610          LTORG
+00000368 63                                  611                =AL1(99)
+00000370                                     612          DS    0D
+                                             613          IARV64 MF=(L,GET64T,0D),PLISTVER=MAX  64-BIT STORAGE REQUEST
+                                             614+*                     MACDATE -01/08/26-<6>
+                                             615+              PUSH  PRINT                                               01-IARV64
+                                             616+                     PRINT ON                                           01-IARV64
+                        00000370             617+M00M0015 EQU   GET64T             ++ IARV64 NAME                        01-IARV64
+00000370                                     618+GET64T   DS    0D                 ++ IARV64 PARM LIST                   01-IARV64
+00000370                                     619+GET64T_XVERSION DS XL1            ++ INPUT XVERSION                     01-IARV64
+00000371                                     620+GET64T_XREQUEST DS XL1            ++  XREQUEST                          01-IARV64
+                        00000001             621+GET64T_XREQUEST_GETSTOR EQU 1     ++ XREQUEST.GETSTOR KEYWORD           01-IARV64
+                        00000002             622+GET64T_XREQUEST_GETSHARED EQU 2   ++ XREQUEST.GETSHARED KEYWORD         01-IARV64
+                        00000003             623+GET64T_XREQUEST_DETACH EQU 3      ++ XREQUEST.DETACH KEYWORD            01-IARV64
+                        00000004             624+GET64T_XREQUEST_PAGEFIX EQU 4     ++ XREQUEST.PAGEFIX KEYWORD           01-IARV64
+                        00000005             625+GET64T_XREQUEST_PAGEUNFIX EQU 5   ++ XREQUEST.PAGEUNFIX KEYWORD         01-IARV64
+                        00000006             626+GET64T_XREQUEST_PAGEOUT EQU 6     ++ XREQUEST.PAGEOUT KEYWORD           01-IARV64
+                        00000007             627+GET64T_XREQUEST_DISCARDDATA EQU 7 ++ XREQUEST.DISCARDDATA KEYWORD       01-IARV64
+                        00000008             628+GET64T_XREQUEST_PAGEIN EQU 8      ++ XREQUEST.PAGEIN KEYWORD            01-IARV64
+                        00000009             629+GET64T_XREQUEST_PROTECT EQU 9     ++ XREQUEST.PROTECT KEYWORD           01-IARV64
+                        0000000A             630+GET64T_XREQUEST_SHAREMEMOBJ EQU 10                                     X01-IARV64
+                                                +                                  ++ XREQUEST.SHAREMEMOBJ KEYWORD
+                        0000000B             631+GET64T_XREQUEST_CHANGEACCESS EQU 11                                    X01-IARV64
+                                                +                                  ++ XREQUEST.CHANGEACCESS KEYWORD
+                        0000000C             632+GET64T_XREQUEST_UNPROTECT EQU 12  ++ XREQUEST.UNPROTECT KEYWORD         01-IARV64
+                        0000000D             633+GET64T_XREQUEST_CHANGEGUARD EQU 13                                     X01-IARV64
+                                                +                                  ++ XREQUEST.CHANGEGUARD KEYWORD
+                        0000000E             634+GET64T_XREQUEST_LIST EQU 14       ++ XREQUEST.LIST KEYWORD              01-IARV64
+                        0000000F             635+GET64T_XREQUEST_GETCOMMON EQU 15  ++ XREQUEST.GETCOMMON KEYWORD         01-IARV64
+                        00000010             636+GET64T_XREQUEST_COUNTPAGES EQU 16 ++ XREQUEST.COUNTPAGES KEYWORD        01-IARV64
+                        00000011             637+GET64T_XREQUEST_PCIEFIX EQU 17    ++ XREQUEST.PCIEFIX KEYWORD           01-IARV64
+                        00000012             638+GET64T_XREQUEST_PCIEUNFIX EQU 18  ++ XREQUEST.PCIEUNFIX KEYWORD         01-IARV64
+                        00000013             639+GET64T_XREQUEST_CHANGEATTRIBUTE EQU 19                                 X01-IARV64
+                                                +                                  ++ XREQUEST.CHANGEATTRIBUTE KEYWORD
+00000372                                     640+GET64T_XFLAGS0 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             641+GET64T_XMOTKNSOURCE_SYSTEM EQU B'10000000'                             X01-IARV64
+                                                +                                  ++ XMOTKNSOURCE.SYSTEM KEYWORD
+                        00000040             642+GET64T_XMOTKNCREATOR_SYSTEM EQU B'01000000'                            X01-IARV64
+                                                +                                  ++ XMOTKNCREATOR.SYSTEM KEYWORD
+                        00000020             643+GET64T_XMATCH_MOTOKEN EQU B'00100000'                                  X01-IARV64
+                                                +                                  ++ XMATCH.MOTOKEN KEYWORD
+00000373                                     644+GET64T_XKEY DS XL1                ++                                    01-IARV64
+00000374                                     645+GET64T_XFLAGS1 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             646+GET64T_KEYUSED_KEY EQU B'10000000'                                     X01-IARV64
+                                                +                                  ++ KEYUSED.KEY KEYWORD
+                        00000040             647+GET64T_KEYUSED_USERTKN EQU B'01000000'                                 X01-IARV64
+                                                +                                  ++ KEYUSED.USERTKN KEYWORD
+                        00000020             648+GET64T_KEYUSED_TTOKEN EQU B'00100000'                                  X01-IARV64
+                                                +                                  ++ KEYUSED.TTOKEN KEYWORD
+                        00000010             649+GET64T_KEYUSED_CONVERTSTART EQU B'00010000'                            X01-IARV64
+i                                                +                                  ++ KEYUSED.CONVERTSTART KEYWORD
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   19
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        00000008             650+GET64T_KEYUSED_GUARDSIZE64 EQU B'00001000'                             X01-IARV64
+                                                +                                  ++ KEYUSED.GUARDSIZE64 KEYWORD
+                        00000004             651+GET64T_KEYUSED_CONVERTSIZE64 EQU B'00000100'                           X01-IARV64
+                                                +                                  ++ KEYUSED.CONVERTSIZE64 KEYWORD
+                        00000002             652+GET64T_KEYUSED_MOTKN EQU B'00000010'                                   X01-IARV64
+                                                +                                  ++ KEYUSED.MOTKN KEYWORD
+                        00000001             653+GET64T_KEYUSED_OWNERJOBNAME EQU B'00000001'                            X01-IARV64
+                                                +                                  ++ KEYUSED.OWNERJOBNAME KEYWORD
+00000375                                     654+GET64T_XFLAGS2 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             655+GET64T_XCOND_YES EQU B'10000000'  ++ XCOND.YES KEYWORD                  01-IARV64
+                        00000040             656+GET64T_XFPROT_NO EQU B'01000000'  ++ XFPROT.NO KEYWORD                  01-IARV64
+                        00000020             657+GET64T_XCONTROL_AUTH EQU B'00100000'                                   X01-IARV64
+                                                +                                  ++ XCONTROL.AUTH KEYWORD
+                        00000010             658+GET64T_XGUARDLOC_HIGH EQU B'00010000'                                  X01-IARV64
+                                                +                                  ++ XGUARDLOC.HIGH KEYWORD
+                        00000008             659+GET64T_XCHANGEACCESS_GLOBAL EQU B'00001000'                            X01-IARV64
+                                                +                                  ++ XCHANGEACCESS.GLOBAL KEYWORD
+                        00000004             660+GET64T_XPAGEFRAMESIZE_1MEG EQU B'00000100'                             X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.1MEG KEYWORD
+                        00000002             661+GET64T_XPAGEFRAMESIZE_MAX EQU B'00000010'                              X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.MAX KEYWORD
+                        00000001             662+GET64T_XPAGEFRAMESIZE_ALL EQU B'00000001'                              X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.ALL KEYWORD
+00000376                                     663+GET64T_XFLAGS3 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             664+GET64T_XMATCH_USERTOKEN EQU B'10000000'                                X01-IARV64
+                                                +                                  ++ XMATCH.USERTOKEN KEYWORD
+                        00000040             665+GET64T_XAFFINITY_SYSTEM EQU B'01000000'                                X01-IARV64
+                                                +                                  ++ XAFFINITY.SYSTEM KEYWORD
+                        00000020             666+GET64T_XUSE2GTO32G_YES EQU B'00100000'                                 X01-IARV64
+                                                +                                  ++ XUSE2GTO32G.YES KEYWORD
+                        00000010             667+GET64T_XOWNER_NO EQU B'00010000'  ++ XOWNER.NO KEYWORD                  01-IARV64
+                        00000008             668+GET64T_XV64SELECT_NO EQU B'00001000'                                   X01-IARV64
+                                                +                                  ++ XV64SELECT.NO KEYWORD
+                        00000004             669+GET64T_XSVCDUMPRGN_NO EQU B'00000100'                                  X01-IARV64
+                                                +                                  ++ XSVCDUMPRGN.NO KEYWORD
+                        00000002             670+GET64T_XV64SHARED_NO EQU B'00000010'                                   X01-IARV64
+                                                +                                  ++ XV64SHARED.NO KEYWORD
+                        00000001             671+GET64T_XSVCDUMPRGN_ALL EQU B'00000001'                                 X01-IARV64
+                                                +                                  ++ XSVCDUMPRGN.ALL KEYWORD
+00000377                                     672+GET64T_XFLAGS4 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             673+GET64T_XLONG_NO EQU B'10000000'   ++ XLONG.NO KEYWORD                   01-IARV64
+                        00000040             674+GET64T_XCLEAR_NO EQU B'01000000'  ++ XCLEAR.NO KEYWORD                  01-IARV64
+                        00000020             675+GET64T_XVIEW_READONLY EQU B'00100000'                                  X01-IARV64
+                                                +                                  ++ XVIEW.READONLY KEYWORD
+                        00000010             676+GET64T_XVIEW_SHAREDWRITE EQU B'00010000'                               X01-IARV64
+                                                +                                  ++ XVIEW.SHAREDWRITE KEYWORD
+                        00000008             677+GET64T_XVIEW_HIDDEN EQU B'00001000'                                    X01-IARV64
+                                                +                                  ++ XVIEW.HIDDEN KEYWORD
+                        00000004             678+GET64T_XCONVERT_TOGUARD EQU B'00000100'                                X01-IARV64
+                                                +                                  ++ XCONVERT.TOGUARD KEYWORD
+                        00000002             679+GET64T_XCONVERT_FROMGUARD EQU B'00000010'                              X01-IARV64
+                                                +                                  ++ XCONVERT.FROMGUARD KEYWORD
+                        00000001             680+GET64T_XKEEPREAL_NO EQU B'00000001'                                    X01-IARV64
+                                                +                                  ++ XKEEPREAL.NO KEYWORD
+i00000378                                     681+GET64T_XSEGMENTS DS D             ++                                    01-IARV64
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   20
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+00000380                                     682+GET64T_XTTOKEN DS CL16            ++                                    01-IARV64
+00000390                                     683+GET64T_XUSERTKN DS D              ++                                    01-IARV64
+00000398                                     684+GET64T_XORIGIN DS AD              ++                                    01-IARV64
+000003A0                                     685+GET64T_XRANGLIST DS AD            ++                                    01-IARV64
+000003A8                                     686+GET64T_XMEMOBJSTART DS AD         ++                                    01-IARV64
+000003B0                                     687+GET64T_XGUARDSIZE DS F            ++                                    01-IARV64
+000003B4                                     688+GET64T_XCONVERTSIZE DS F          ++                                    01-IARV64
+000003B8                                     689+GET64T_XALETVALUE DS F            ++                                    01-IARV64
+000003BC                                     690+GET64T_XNUMRANGE DS F             ++                                    01-IARV64
+000003C0                                     691+GET64T_XV64LISTPTR DS A           ++                                    01-IARV64
+000003C4                                     692+GET64T_XV64LISTLENGTH DS F        ++                                    01-IARV64
+000003C8                                     693+GET64T_XCONVERTSTART DS D         ++                                    01-IARV64
+000003D0                                     694+GET64T_XCONVERTSIZE64 DS D        ++                                    01-IARV64
+000003D8                                     695+GET64T_XGUARDSIZE64 DS D          ++                                    01-IARV64
+000003E0                                     696+GET64T_XUSERTOKEN DS CL8          ++                                    01-IARV64
+000003E8                                     697+GET64T_XDUMPPRIORITY DS XL1       ++                                    01-IARV64
+000003E9                                     698+GET64T_XFLAGS5 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             699+GET64T_XDUMPPROTOCOL_YES EQU B'10000000'                               X01-IARV64
+                                                +                                  ++ XDUMPPROTOCOL.YES KEYWORD
+                        00000040             700+GET64T_XORDER_DUMPPRIORITY EQU B'01000000'                             X01-IARV64
+                                                +                                  ++ XORDER.DUMPPRIORITY KEYWORD
+                        00000020             701+GET64T_XTYPE_PAGEABLE EQU B'00100000'                                  X01-IARV64
+                                                +                                  ++ XTYPE.PAGEABLE KEYWORD
+                        00000010             702+GET64T_XTYPE_DREF EQU B'00010000' ++ XTYPE.DREF KEYWORD                 01-IARV64
+                        00000008             703+GET64T_XOWNERCOM_HOME EQU B'00001000'                                  X01-IARV64
+                                                +                                  ++ XOWNERCOM.HOME KEYWORD
+                        00000004             704+GET64T_XOWNERCOM_PRIMARY EQU B'00000100'                               X01-IARV64
+                                                +                                  ++ XOWNERCOM.PRIMARY KEYWORD
+                        00000002             705+GET64T_XOWNERCOM_SYSTEM EQU B'00000010'                                X01-IARV64
+                                                +                                  ++ XOWNERCOM.SYSTEM KEYWORD
+                        00000001             706+GET64T_XOWNERCOM_BYASID EQU B'00000001'                                X01-IARV64
+                                                +                                  ++ XOWNERCOM.BYASID KEYWORD
+000003EA                                     707+GET64T_XFLAGS6 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             708+GET64T_XV64COMMON_NO EQU B'10000000'                                   X01-IARV64
+                                                +                                  ++ XV64COMMON.NO KEYWORD
+                        00000040             709+GET64T_XMEMLIMIT_NO EQU B'01000000'                                    X01-IARV64
+                                                +                                  ++ XMEMLIMIT.NO KEYWORD
+                        00000020             710+GET64T_XDETACHFIXED_YES EQU B'00100000'                                X01-IARV64
+                                                +                                  ++ XDETACHFIXED.YES KEYWORD
+                        00000010             711+GET64T_XDOAUTHCHECKS_YES EQU B'00010000'                               X01-IARV64
+                                                +                                  ++ XDOAUTHCHECKS.YES KEYWORD
+                        00000008             712+GET64T_XLOCALSYSAREA_YES EQU B'00001000'                               X01-IARV64
+                                                +                                  ++ XLOCALSYSAREA.YES KEYWORD
+                        00000004             713+GET64T_XAMOUNTSIZE_4K EQU B'00000100'                                  X01-IARV64
+                                                +                                  ++ XAMOUNTSIZE.4K KEYWORD
+                        00000002             714+GET64T_XAMOUNTSIZE_1MEG EQU B'00000010'                                X01-IARV64
+                                                +                                  ++ XAMOUNTSIZE.1MEG KEYWORD
+                        00000001             715+GET64T_XMEMLIMIT_COND EQU B'00000001'                                  X01-IARV64
+                                                +                                  ++ XMEMLIMIT.COND KEYWORD
+000003EB                                     716+GET64T_XFLAGS7 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             717+GET64T_KEYUSED_DUMP EQU B'10000000'                                    X01-IARV64
+                                                +                                  ++ KEYUSED.DUMP KEYWORD
+                        00000040             718+GET64T_KEYUSED_OPTIONVALUE EQU B'01000000'                             X01-IARV64
+i                                                +                                  ++ KEYUSED.OPTIONVALUE KEYWORD
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   21
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        00000020             719+GET64T_KEYUSED_SVCDUMPRGN EQU B'00100000'                              X01-IARV64
+                                                +                                  ++ KEYUSED.SVCDUMPRGN KEYWORD
+                        00000010             720+GET64T_XATTRIBUTE_DEFS EQU B'00010000'                                 X01-IARV64
+                                                +                                  ++ XATTRIBUTE.DEFS KEYWORD
+                        00000008             721+GET64T_XATTRIBUTE_OWNERGONE EQU B'00001000'                            X01-IARV64
+                                                +                                  ++ XATTRIBUTE.OWNERGONE KEYWORD
+                        00000004             722+GET64T_XATTRIBUTE_NOTOWNERGONE EQU B'00000100'                         X01-IARV64
+                                                +                                  ++ XATTRIBUTE.NOTOWNERGONE KEYWORD
+                        00000002             723+GET64T_XTRACKINFO_YES EQU B'00000010'                                  X01-IARV64
+                                                +                                  ++ XTRACKINFO.YES KEYWORD
+                        00000001             724+GET64T_XUNLOCKED_YES EQU B'00000001'                                   X01-IARV64
+                                                +                                  ++ XUNLOCKED.YES KEYWORD
+000003EC                                     725+GET64T_XDUMP DS XL1               ++  XDUMP                             01-IARV64
+                        00000000             726+GET64T_XDUMP_NONE EQU 0           ++ XDUMP.NONE KEYWORD                 01-IARV64
+                        00000001             727+GET64T_XDUMP_NO EQU 1             ++ XDUMP.NO KEYWORD                   01-IARV64
+                        00000002             728+GET64T_XDUMP_LIKESQA EQU 2        ++ XDUMP.LIKESQA KEYWORD              01-IARV64
+                        00000003             729+GET64T_XDUMP_LIKECSA EQU 3        ++ XDUMP.LIKECSA KEYWORD              01-IARV64
+                        00000020             730+GET64T_XDUMP_LIKERGN EQU 32       ++ XDUMP.LIKERGN KEYWORD              01-IARV64
+                        00000021             731+GET64T_XDUMP_LIKELSQA EQU 33      ++ XDUMP.LIKELSQA KEYWORD             01-IARV64
+                        000000FF             732+GET64T_XDUMP_ALL EQU 255          ++ XDUMP.ALL KEYWORD                  01-IARV64
+000003ED                                     733+GET64T_XFLAGS8 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             734+GET64T_XPAGEFRAMESIZE_PAGEABLE1MEG EQU B'10000000'                     X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.PAGEABLE1MEG KEYWORX
+                                                +               D
+                        00000040             735+GET64T_XPAGEFRAMESIZE_DREF1MEG EQU B'01000000'                         X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.DREF1MEG KEYWORD
+                        00000020             736+GET64T_XSADMP_YES EQU B'00100000' ++ XSADMP.YES KEYWORD                 01-IARV64
+                        00000010             737+GET64T_XSADMP_NO EQU B'00010000'  ++ XSADMP.NO KEYWORD                  01-IARV64
+                        00000008             738+GET64T_XUSE2GTO64G_YES EQU B'00001000'                                 X01-IARV64
+                                                +                                  ++ XUSE2GTO64G.YES KEYWORD
+                        00000004             739+GET64T_XDISCARDPAGES_YES EQU B'00000100'                               X01-IARV64
+                                                +                                  ++ XDISCARDPAGES.YES KEYWORD
+                        00000002             740+GET64T_XEXECUTABLE_YES EQU B'00000010'                                 X01-IARV64
+                                                +                                  ++ XEXECUTABLE.YES KEYWORD
+                        00000001             741+GET64T_XEXECUTABLE_NO EQU B'00000001'                                  X01-IARV64
+                                                +                                  ++ XEXECUTABLE.NO KEYWORD
+000003EE                                     742+GET64T_XOWNERASID DS XL2          ++                                    01-IARV64
+000003F0                                     743+GET64T_XOPTIONVALUE DS XL1        ++                                    01-IARV64
+000003F1                                     744+GET64T_XRSV0001 DS CL8            ++ RESERVED                           01-IARV64
+000003F9                                     745+GET64T_XOWNERJOBNAME DS CL8       ++                                    01-IARV64
+00000401                                     746+GET64T_XRSV0004 DS CL7            ++ RESERVED                           01-IARV64
+00000408                                     747+GET64T_XDMAPAGETABLE DS AD        ++                                    01-IARV64
+00000410                                     748+GET64T_XUNITS DS D                ++                                    01-IARV64
+00000418                                     749+GET64T_XFLAGS9 DS BL.8            ++ FIELD_LABEL                        01-IARV64
+                        00000080             750+GET64T_KEYUSED_UNITS EQU B'10000000'                                   X01-IARV64
+                                                +                                  ++ KEYUSED.UNITS KEYWORD
+                        00000040             751+GET64T_XUNITSIZE_1M EQU B'01000000'                                    X01-IARV64
+                                                +                                  ++ XUNITSIZE.1M KEYWORD
+                        00000020             752+GET64T_XUNITSIZE_2G EQU B'00100000'                                    X01-IARV64
+                                                +                                  ++ XUNITSIZE.2G KEYWORD
+                        00000010             753+GET64T_XPAGEFRAMESIZE_1M EQU B'00010000'                               X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.1M KEYWORD
+                        00000008             754+GET64T_XPAGEFRAMESIZE_2G EQU B'00001000'                               X01-IARV64
+i                                                +                                  ++ XPAGEFRAMESIZE.2G KEYWORD
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   22
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        00000004             755+GET64T_XTYPE_FIXED EQU B'00000100'                                     X01-IARV64
+                                                +                                  ++ XTYPE.FIXED KEYWORD
+00000419                                     756+GET64T_XFLAGS10 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             757+GET64T_KEYUSED_INORIGIN EQU B'10000000'                                X01-IARV64
+                                                +                                  ++ KEYUSED.INORIGIN KEYWORD
+                        00000040             758+GET64T_XSENSITIVE_YES EQU B'01000000'                                  X01-IARV64
+                                                +                                  ++ XSENSITIVE.YES KEYWORD
+                        00000020             759+GET64T_XSENSITIVE_NO EQU B'00100000'                                   X01-IARV64
+                                                +                                  ++ XSENSITIVE.NO KEYWORD
+                        00000010             760+GET64T_KEYUSED_SENSITIVE EQU B'00010000'                               X01-IARV64
+                                                +                                  ++ KEYUSED.SENSITIVE KEYWORD
+                        00000008             761+GET64T_XFORKCOPY_NO EQU B'00001000'                                    X01-IARV64
+                                                +                                  ++ XFORKCOPY.NO KEYWORD
+0000041A                                     762+GET64T_XFLAGS11 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             763+GET64T_KEYUSED_OBJECTTYPE EQU B'10000000'                              X01-IARV64
+                                                +                                  ++ KEYUSED.OBJECTTYPE KEYWORD
+                        00000040             764+GET64T_XOBJECTTYPE_POOL EQU B'01000000'                                X01-IARV64
+                                                +                                  ++ XOBJECTTYPE.POOL KEYWORD
+                        00000020             765+GET64T_XOBJECTTYPE_RSMINTERNAL EQU B'00100000'                         X01-IARV64
+                                                +                                  ++ XOBJECTTYPE.RSMINTERNAL KEYWORD
+0000041B                                     766+GET64T_XRSV0005 DS CL5            ++ RESERVED                           01-IARV64
+                        00000420             767+GET64T_PL_END EQU *               ++ END OF BASE PLIST                  01-IARV64
+00000420                00000420 00000390    768+         ORG   GET64T+32                                                01-IARV64
+00000390                                     769+GET64T_XOUTMOTKN DS D             ++                                    01-IARV64
+00000398                00000398 00000390    770+         ORG   GET64T+32                                                01-IARV64
+00000390                                     771+GET64T_XMOTKN DS D                ++                                    01-IARV64
+00000398                00000398 000003A8    772+         ORG   GET64T+56                                                01-IARV64
+000003A8                                     773+GET64T_XINORIGIN DS AD            ++                                    01-IARV64
+000003B0                000003B0 000003A8    774+         ORG   GET64T+56                                                01-IARV64
+000003A8                                     775+GET64T_XINADDR DS AD              ++                                    01-IARV64
+000003B0                000003B0 00000420    776+         ORG   GET64T_PL_END      RESET LOCATION COUNTER                01-IARV64
+                        000000B0             777+GET64TL  EQU   *-GET64T           ++ LENGTH OF PLIST                    01-IARV64
+                                             779+         POP   PRINT                                                    01-IARV64
+                                             780+*                                            IARV64-6
+                        000000B0             782 GET64_TLEN EQU *-GET64T
+00000420                                     783          DS    0D
+                                             784          IARV64 MF=(L,FREE64T,0D),PLISTVER=MAX  64-BIT STORAGE REQUEST
+                                             785+*                     MACDATE -01/08/26-<6>
+                                             786+              PUSH  PRINT                                               01-IARV64
+                                             787+                     PRINT ON                                           01-IARV64
+                        00000420             788+M00M0016 EQU   FREE64T            ++ IARV64 NAME                        01-IARV64
+00000420                                     789+FREE64T  DS    0D                 ++ IARV64 PARM LIST                   01-IARV64
+00000420                                     790+FREE64T_XVERSION DS XL1           ++ INPUT XVERSION                     01-IARV64
+00000421                                     791+FREE64T_XREQUEST DS XL1           ++  XREQUEST                          01-IARV64
+                        00000001             792+FREE64T_XREQUEST_GETSTOR EQU 1    ++ XREQUEST.GETSTOR KEYWORD           01-IARV64
+                        00000002             793+FREE64T_XREQUEST_GETSHARED EQU 2  ++ XREQUEST.GETSHARED KEYWORD         01-IARV64
+                        00000003             794+FREE64T_XREQUEST_DETACH EQU 3     ++ XREQUEST.DETACH KEYWORD            01-IARV64
+                        00000004             795+FREE64T_XREQUEST_PAGEFIX EQU 4    ++ XREQUEST.PAGEFIX KEYWORD           01-IARV64
+                        00000005             796+FREE64T_XREQUEST_PAGEUNFIX EQU 5  ++ XREQUEST.PAGEUNFIX KEYWORD         01-IARV64
+                        00000006             797+FREE64T_XREQUEST_PAGEOUT EQU 6    ++ XREQUEST.PAGEOUT KEYWORD           01-IARV64
+                        00000007             798+FREE64T_XREQUEST_DISCARDDATA EQU 7                                     X01-IARV64
+                                                +                                  ++ XREQUEST.DISCARDDATA KEYWORD
+i                        00000008             799+FREE64T_XREQUEST_PAGEIN EQU 8     ++ XREQUEST.PAGEIN KEYWORD            01-IARV64
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   23
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        00000009             800+FREE64T_XREQUEST_PROTECT EQU 9    ++ XREQUEST.PROTECT KEYWORD           01-IARV64
+                        0000000A             801+FREE64T_XREQUEST_SHAREMEMOBJ EQU 10                                    X01-IARV64
+                                                +                                  ++ XREQUEST.SHAREMEMOBJ KEYWORD
+                        0000000B             802+FREE64T_XREQUEST_CHANGEACCESS EQU 11                                   X01-IARV64
+                                                +                                  ++ XREQUEST.CHANGEACCESS KEYWORD
+                        0000000C             803+FREE64T_XREQUEST_UNPROTECT EQU 12 ++ XREQUEST.UNPROTECT KEYWORD         01-IARV64
+                        0000000D             804+FREE64T_XREQUEST_CHANGEGUARD EQU 13                                    X01-IARV64
+                                                +                                  ++ XREQUEST.CHANGEGUARD KEYWORD
+                        0000000E             805+FREE64T_XREQUEST_LIST EQU 14      ++ XREQUEST.LIST KEYWORD              01-IARV64
+                        0000000F             806+FREE64T_XREQUEST_GETCOMMON EQU 15 ++ XREQUEST.GETCOMMON KEYWORD         01-IARV64
+                        00000010             807+FREE64T_XREQUEST_COUNTPAGES EQU 16                                     X01-IARV64
+                                                +                                  ++ XREQUEST.COUNTPAGES KEYWORD
+                        00000011             808+FREE64T_XREQUEST_PCIEFIX EQU 17   ++ XREQUEST.PCIEFIX KEYWORD           01-IARV64
+                        00000012             809+FREE64T_XREQUEST_PCIEUNFIX EQU 18 ++ XREQUEST.PCIEUNFIX KEYWORD         01-IARV64
+                        00000013             810+FREE64T_XREQUEST_CHANGEATTRIBUTE EQU 19                                X01-IARV64
+                                                +                                  ++ XREQUEST.CHANGEATTRIBUTE KEYWORD
+00000422                                     811+FREE64T_XFLAGS0 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             812+FREE64T_XMOTKNSOURCE_SYSTEM EQU B'10000000'                            X01-IARV64
+                                                +                                  ++ XMOTKNSOURCE.SYSTEM KEYWORD
+                        00000040             813+FREE64T_XMOTKNCREATOR_SYSTEM EQU B'01000000'                           X01-IARV64
+                                                +                                  ++ XMOTKNCREATOR.SYSTEM KEYWORD
+                        00000020             814+FREE64T_XMATCH_MOTOKEN EQU B'00100000'                                 X01-IARV64
+                                                +                                  ++ XMATCH.MOTOKEN KEYWORD
+00000423                                     815+FREE64T_XKEY DS XL1               ++                                    01-IARV64
+00000424                                     816+FREE64T_XFLAGS1 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             817+FREE64T_KEYUSED_KEY EQU B'10000000'                                    X01-IARV64
+                                                +                                  ++ KEYUSED.KEY KEYWORD
+                        00000040             818+FREE64T_KEYUSED_USERTKN EQU B'01000000'                                X01-IARV64
+                                                +                                  ++ KEYUSED.USERTKN KEYWORD
+                        00000020             819+FREE64T_KEYUSED_TTOKEN EQU B'00100000'                                 X01-IARV64
+                                                +                                  ++ KEYUSED.TTOKEN KEYWORD
+                        00000010             820+FREE64T_KEYUSED_CONVERTSTART EQU B'00010000'                           X01-IARV64
+                                                +                                  ++ KEYUSED.CONVERTSTART KEYWORD
+                        00000008             821+FREE64T_KEYUSED_GUARDSIZE64 EQU B'00001000'                            X01-IARV64
+                                                +                                  ++ KEYUSED.GUARDSIZE64 KEYWORD
+                        00000004             822+FREE64T_KEYUSED_CONVERTSIZE64 EQU B'00000100'                          X01-IARV64
+                                                +                                  ++ KEYUSED.CONVERTSIZE64 KEYWORD
+                        00000002             823+FREE64T_KEYUSED_MOTKN EQU B'00000010'                                  X01-IARV64
+                                                +                                  ++ KEYUSED.MOTKN KEYWORD
+                        00000001             824+FREE64T_KEYUSED_OWNERJOBNAME EQU B'00000001'                           X01-IARV64
+                                                +                                  ++ KEYUSED.OWNERJOBNAME KEYWORD
+00000425                                     825+FREE64T_XFLAGS2 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             826+FREE64T_XCOND_YES EQU B'10000000' ++ XCOND.YES KEYWORD                  01-IARV64
+                        00000040             827+FREE64T_XFPROT_NO EQU B'01000000' ++ XFPROT.NO KEYWORD                  01-IARV64
+                        00000020             828+FREE64T_XCONTROL_AUTH EQU B'00100000'                                  X01-IARV64
+                                                +                                  ++ XCONTROL.AUTH KEYWORD
+                        00000010             829+FREE64T_XGUARDLOC_HIGH EQU B'00010000'                                 X01-IARV64
+                                                +                                  ++ XGUARDLOC.HIGH KEYWORD
+                        00000008             830+FREE64T_XCHANGEACCESS_GLOBAL EQU B'00001000'                           X01-IARV64
+                                                +                                  ++ XCHANGEACCESS.GLOBAL KEYWORD
+                        00000004             831+FREE64T_XPAGEFRAMESIZE_1MEG EQU B'00000100'                            X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.1MEG KEYWORD
+                        00000002             832+FREE64T_XPAGEFRAMESIZE_MAX EQU B'00000010'                             X01-IARV64
+i                                                +                                  ++ XPAGEFRAMESIZE.MAX KEYWORD
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   24
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        00000001             833+FREE64T_XPAGEFRAMESIZE_ALL EQU B'00000001'                             X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.ALL KEYWORD
+00000426                                     834+FREE64T_XFLAGS3 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             835+FREE64T_XMATCH_USERTOKEN EQU B'10000000'                               X01-IARV64
+                                                +                                  ++ XMATCH.USERTOKEN KEYWORD
+                        00000040             836+FREE64T_XAFFINITY_SYSTEM EQU B'01000000'                               X01-IARV64
+                                                +                                  ++ XAFFINITY.SYSTEM KEYWORD
+                        00000020             837+FREE64T_XUSE2GTO32G_YES EQU B'00100000'                                X01-IARV64
+                                                +                                  ++ XUSE2GTO32G.YES KEYWORD
+                        00000010             838+FREE64T_XOWNER_NO EQU B'00010000' ++ XOWNER.NO KEYWORD                  01-IARV64
+                        00000008             839+FREE64T_XV64SELECT_NO EQU B'00001000'                                  X01-IARV64
+                                                +                                  ++ XV64SELECT.NO KEYWORD
+                        00000004             840+FREE64T_XSVCDUMPRGN_NO EQU B'00000100'                                 X01-IARV64
+                                                +                                  ++ XSVCDUMPRGN.NO KEYWORD
+                        00000002             841+FREE64T_XV64SHARED_NO EQU B'00000010'                                  X01-IARV64
+                                                +                                  ++ XV64SHARED.NO KEYWORD
+                        00000001             842+FREE64T_XSVCDUMPRGN_ALL EQU B'00000001'                                X01-IARV64
+                                                +                                  ++ XSVCDUMPRGN.ALL KEYWORD
+00000427                                     843+FREE64T_XFLAGS4 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             844+FREE64T_XLONG_NO EQU B'10000000'  ++ XLONG.NO KEYWORD                   01-IARV64
+                        00000040             845+FREE64T_XCLEAR_NO EQU B'01000000' ++ XCLEAR.NO KEYWORD                  01-IARV64
+                        00000020             846+FREE64T_XVIEW_READONLY EQU B'00100000'                                 X01-IARV64
+                                                +                                  ++ XVIEW.READONLY KEYWORD
+                        00000010             847+FREE64T_XVIEW_SHAREDWRITE EQU B'00010000'                              X01-IARV64
+                                                +                                  ++ XVIEW.SHAREDWRITE KEYWORD
+                        00000008             848+FREE64T_XVIEW_HIDDEN EQU B'00001000'                                   X01-IARV64
+                                                +                                  ++ XVIEW.HIDDEN KEYWORD
+                        00000004             849+FREE64T_XCONVERT_TOGUARD EQU B'00000100'                               X01-IARV64
+                                                +                                  ++ XCONVERT.TOGUARD KEYWORD
+                        00000002             850+FREE64T_XCONVERT_FROMGUARD EQU B'00000010'                             X01-IARV64
+                                                +                                  ++ XCONVERT.FROMGUARD KEYWORD
+                        00000001             851+FREE64T_XKEEPREAL_NO EQU B'00000001'                                   X01-IARV64
+                                                +                                  ++ XKEEPREAL.NO KEYWORD
+00000428                                     852+FREE64T_XSEGMENTS DS D            ++                                    01-IARV64
+00000430                                     853+FREE64T_XTTOKEN DS CL16           ++                                    01-IARV64
+00000440                                     854+FREE64T_XUSERTKN DS D             ++                                    01-IARV64
+00000448                                     855+FREE64T_XORIGIN DS AD             ++                                    01-IARV64
+00000450                                     856+FREE64T_XRANGLIST DS AD           ++                                    01-IARV64
+00000458                                     857+FREE64T_XMEMOBJSTART DS AD        ++                                    01-IARV64
+00000460                                     858+FREE64T_XGUARDSIZE DS F           ++                                    01-IARV64
+00000464                                     859+FREE64T_XCONVERTSIZE DS F         ++                                    01-IARV64
+00000468                                     860+FREE64T_XALETVALUE DS F           ++                                    01-IARV64
+0000046C                                     861+FREE64T_XNUMRANGE DS F            ++                                    01-IARV64
+00000470                                     862+FREE64T_XV64LISTPTR DS A          ++                                    01-IARV64
+00000474                                     863+FREE64T_XV64LISTLENGTH DS F       ++                                    01-IARV64
+00000478                                     864+FREE64T_XCONVERTSTART DS D        ++                                    01-IARV64
+00000480                                     865+FREE64T_XCONVERTSIZE64 DS D       ++                                    01-IARV64
+00000488                                     866+FREE64T_XGUARDSIZE64 DS D         ++                                    01-IARV64
+00000490                                     867+FREE64T_XUSERTOKEN DS CL8         ++                                    01-IARV64
+00000498                                     868+FREE64T_XDUMPPRIORITY DS XL1      ++                                    01-IARV64
+00000499                                     869+FREE64T_XFLAGS5 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             870+FREE64T_XDUMPPROTOCOL_YES EQU B'10000000'                              X01-IARV64
+                                                +                                  ++ XDUMPPROTOCOL.YES KEYWORD
+                        00000040             871+FREE64T_XORDER_DUMPPRIORITY EQU B'01000000'                            X01-IARV64
+i                                                +                                  ++ XORDER.DUMPPRIORITY KEYWORD
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   25
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        00000020             872+FREE64T_XTYPE_PAGEABLE EQU B'00100000'                                 X01-IARV64
+                                                +                                  ++ XTYPE.PAGEABLE KEYWORD
+                        00000010             873+FREE64T_XTYPE_DREF EQU B'00010000'                                     X01-IARV64
+                                                +                                  ++ XTYPE.DREF KEYWORD
+                        00000008             874+FREE64T_XOWNERCOM_HOME EQU B'00001000'                                 X01-IARV64
+                                                +                                  ++ XOWNERCOM.HOME KEYWORD
+                        00000004             875+FREE64T_XOWNERCOM_PRIMARY EQU B'00000100'                              X01-IARV64
+                                                +                                  ++ XOWNERCOM.PRIMARY KEYWORD
+                        00000002             876+FREE64T_XOWNERCOM_SYSTEM EQU B'00000010'                               X01-IARV64
+                                                +                                  ++ XOWNERCOM.SYSTEM KEYWORD
+                        00000001             877+FREE64T_XOWNERCOM_BYASID EQU B'00000001'                               X01-IARV64
+                                                +                                  ++ XOWNERCOM.BYASID KEYWORD
+0000049A                                     878+FREE64T_XFLAGS6 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             879+FREE64T_XV64COMMON_NO EQU B'10000000'                                  X01-IARV64
+                                                +                                  ++ XV64COMMON.NO KEYWORD
+                        00000040             880+FREE64T_XMEMLIMIT_NO EQU B'01000000'                                   X01-IARV64
+                                                +                                  ++ XMEMLIMIT.NO KEYWORD
+                        00000020             881+FREE64T_XDETACHFIXED_YES EQU B'00100000'                               X01-IARV64
+                                                +                                  ++ XDETACHFIXED.YES KEYWORD
+                        00000010             882+FREE64T_XDOAUTHCHECKS_YES EQU B'00010000'                              X01-IARV64
+                                                +                                  ++ XDOAUTHCHECKS.YES KEYWORD
+                        00000008             883+FREE64T_XLOCALSYSAREA_YES EQU B'00001000'                              X01-IARV64
+                                                +                                  ++ XLOCALSYSAREA.YES KEYWORD
+                        00000004             884+FREE64T_XAMOUNTSIZE_4K EQU B'00000100'                                 X01-IARV64
+                                                +                                  ++ XAMOUNTSIZE.4K KEYWORD
+                        00000002             885+FREE64T_XAMOUNTSIZE_1MEG EQU B'00000010'                               X01-IARV64
+                                                +                                  ++ XAMOUNTSIZE.1MEG KEYWORD
+                        00000001             886+FREE64T_XMEMLIMIT_COND EQU B'00000001'                                 X01-IARV64
+                                                +                                  ++ XMEMLIMIT.COND KEYWORD
+0000049B                                     887+FREE64T_XFLAGS7 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             888+FREE64T_KEYUSED_DUMP EQU B'10000000'                                   X01-IARV64
+                                                +                                  ++ KEYUSED.DUMP KEYWORD
+                        00000040             889+FREE64T_KEYUSED_OPTIONVALUE EQU B'01000000'                            X01-IARV64
+                                                +                                  ++ KEYUSED.OPTIONVALUE KEYWORD
+                        00000020             890+FREE64T_KEYUSED_SVCDUMPRGN EQU B'00100000'                             X01-IARV64
+                                                +                                  ++ KEYUSED.SVCDUMPRGN KEYWORD
+                        00000010             891+FREE64T_XATTRIBUTE_DEFS EQU B'00010000'                                X01-IARV64
+                                                +                                  ++ XATTRIBUTE.DEFS KEYWORD
+                        00000008             892+FREE64T_XATTRIBUTE_OWNERGONE EQU B'00001000'                           X01-IARV64
+                                                +                                  ++ XATTRIBUTE.OWNERGONE KEYWORD
+                        00000004             893+FREE64T_XATTRIBUTE_NOTOWNERGONE EQU B'00000100'                        X01-IARV64
+                                                +                                  ++ XATTRIBUTE.NOTOWNERGONE KEYWORD
+                        00000002             894+FREE64T_XTRACKINFO_YES EQU B'00000010'                                 X01-IARV64
+                                                +                                  ++ XTRACKINFO.YES KEYWORD
+                        00000001             895+FREE64T_XUNLOCKED_YES EQU B'00000001'                                  X01-IARV64
+                                                +                                  ++ XUNLOCKED.YES KEYWORD
+0000049C                                     896+FREE64T_XDUMP DS XL1              ++  XDUMP                             01-IARV64
+                        00000000             897+FREE64T_XDUMP_NONE EQU 0          ++ XDUMP.NONE KEYWORD                 01-IARV64
+                        00000001             898+FREE64T_XDUMP_NO EQU 1            ++ XDUMP.NO KEYWORD                   01-IARV64
+                        00000002             899+FREE64T_XDUMP_LIKESQA EQU 2       ++ XDUMP.LIKESQA KEYWORD              01-IARV64
+                        00000003             900+FREE64T_XDUMP_LIKECSA EQU 3       ++ XDUMP.LIKECSA KEYWORD              01-IARV64
+                        00000020             901+FREE64T_XDUMP_LIKERGN EQU 32      ++ XDUMP.LIKERGN KEYWORD              01-IARV64
+                        00000021             902+FREE64T_XDUMP_LIKELSQA EQU 33     ++ XDUMP.LIKELSQA KEYWORD             01-IARV64
+                        000000FF             903+FREE64T_XDUMP_ALL EQU 255         ++ XDUMP.ALL KEYWORD                  01-IARV64
+i0000049D                                     904+FREE64T_XFLAGS8 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   26
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        00000080             905+FREE64T_XPAGEFRAMESIZE_PAGEABLE1MEG EQU B'10000000'                    X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.PAGEABLE1MEG KEYWORX
+                                                +               D
+                        00000040             906+FREE64T_XPAGEFRAMESIZE_DREF1MEG EQU B'01000000'                        X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.DREF1MEG KEYWORD
+                        00000020             907+FREE64T_XSADMP_YES EQU B'00100000'                                     X01-IARV64
+                                                +                                  ++ XSADMP.YES KEYWORD
+                        00000010             908+FREE64T_XSADMP_NO EQU B'00010000' ++ XSADMP.NO KEYWORD                  01-IARV64
+                        00000008             909+FREE64T_XUSE2GTO64G_YES EQU B'00001000'                                X01-IARV64
+                                                +                                  ++ XUSE2GTO64G.YES KEYWORD
+                        00000004             910+FREE64T_XDISCARDPAGES_YES EQU B'00000100'                              X01-IARV64
+                                                +                                  ++ XDISCARDPAGES.YES KEYWORD
+                        00000002             911+FREE64T_XEXECUTABLE_YES EQU B'00000010'                                X01-IARV64
+                                                +                                  ++ XEXECUTABLE.YES KEYWORD
+                        00000001             912+FREE64T_XEXECUTABLE_NO EQU B'00000001'                                 X01-IARV64
+                                                +                                  ++ XEXECUTABLE.NO KEYWORD
+0000049E                                     913+FREE64T_XOWNERASID DS XL2         ++                                    01-IARV64
+000004A0                                     914+FREE64T_XOPTIONVALUE DS XL1       ++                                    01-IARV64
+000004A1                                     915+FREE64T_XRSV0001 DS CL8           ++ RESERVED                           01-IARV64
+000004A9                                     916+FREE64T_XOWNERJOBNAME DS CL8      ++                                    01-IARV64
+000004B1                                     917+FREE64T_XRSV0004 DS CL7           ++ RESERVED                           01-IARV64
+000004B8                                     918+FREE64T_XDMAPAGETABLE DS AD       ++                                    01-IARV64
+000004C0                                     919+FREE64T_XUNITS DS D               ++                                    01-IARV64
+000004C8                                     920+FREE64T_XFLAGS9 DS BL.8           ++ FIELD_LABEL                        01-IARV64
+                        00000080             921+FREE64T_KEYUSED_UNITS EQU B'10000000'                                  X01-IARV64
+                                                +                                  ++ KEYUSED.UNITS KEYWORD
+                        00000040             922+FREE64T_XUNITSIZE_1M EQU B'01000000'                                   X01-IARV64
+                                                +                                  ++ XUNITSIZE.1M KEYWORD
+                        00000020             923+FREE64T_XUNITSIZE_2G EQU B'00100000'                                   X01-IARV64
+                                                +                                  ++ XUNITSIZE.2G KEYWORD
+                        00000010             924+FREE64T_XPAGEFRAMESIZE_1M EQU B'00010000'                              X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.1M KEYWORD
+                        00000008             925+FREE64T_XPAGEFRAMESIZE_2G EQU B'00001000'                              X01-IARV64
+                                                +                                  ++ XPAGEFRAMESIZE.2G KEYWORD
+                        00000004             926+FREE64T_XTYPE_FIXED EQU B'00000100'                                    X01-IARV64
+                                                +                                  ++ XTYPE.FIXED KEYWORD
+000004C9                                     927+FREE64T_XFLAGS10 DS BL.8          ++ FIELD_LABEL                        01-IARV64
+                        00000080             928+FREE64T_KEYUSED_INORIGIN EQU B'10000000'                               X01-IARV64
+                                                +                                  ++ KEYUSED.INORIGIN KEYWORD
+                        00000040             929+FREE64T_XSENSITIVE_YES EQU B'01000000'                                 X01-IARV64
+                                                +                                  ++ XSENSITIVE.YES KEYWORD
+                        00000020             930+FREE64T_XSENSITIVE_NO EQU B'00100000'                                  X01-IARV64
+                                                +                                  ++ XSENSITIVE.NO KEYWORD
+                        00000010             931+FREE64T_KEYUSED_SENSITIVE EQU B'00010000'                              X01-IARV64
+                                                +                                  ++ KEYUSED.SENSITIVE KEYWORD
+                        00000008             932+FREE64T_XFORKCOPY_NO EQU B'00001000'                                   X01-IARV64
+                                                +                                  ++ XFORKCOPY.NO KEYWORD
+000004CA                                     933+FREE64T_XFLAGS11 DS BL.8          ++ FIELD_LABEL                        01-IARV64
+                        00000080             934+FREE64T_KEYUSED_OBJECTTYPE EQU B'10000000'                             X01-IARV64
+                                                +                                  ++ KEYUSED.OBJECTTYPE KEYWORD
+                        00000040             935+FREE64T_XOBJECTTYPE_POOL EQU B'01000000'                               X01-IARV64
+                                                +                                  ++ XOBJECTTYPE.POOL KEYWORD
+                        00000020             936+FREE64T_XOBJECTTYPE_RSMINTERNAL EQU B'00100000'                        X01-IARV64
+                                                +                                  ++ XOBJECTTYPE.RSMINTERNAL KEYWORD
+i000004CB                                     937+FREE64T_XRSV0005 DS CL5           ++ RESERVED                           01-IARV64
+         LINKAGE - OS SAVE AREA MACROS                                                                         Page   27
+  Active Usings: MPMCQ_QCB,R2
+  Loc    Object Code      Addr1    Addr2    Stmt  Source Statement                          HLASM R6.0  2026/11/10 15.20
+                        000004D0             938+FREE64T_PL_END EQU *              ++ END OF BASE PLIST                  01-IARV64
+000004D0                000004D0 00000440    939+         ORG   FREE64T+32                                               01-IARV64
+00000440                                     940+FREE64T_XOUTMOTKN DS D            ++                                    01-IARV64
+00000448                00000448 00000440    941+         ORG   FREE64T+32                                               01-IARV64
+00000440                                     942+FREE64T_XMOTKN DS D               ++                                    01-IARV64
+00000448                00000448 00000458    943+         ORG   FREE64T+56                                               01-IARV64
+00000458                                     944+FREE64T_XINORIGIN DS AD           ++                                    01-IARV64
+00000460                00000460 00000458    945+         ORG   FREE64T+56                                               01-IARV64
+00000458                                     946+FREE64T_XINADDR DS AD             ++                                    01-IARV64
+00000460                00000460 000004D0    947+         ORG   FREE64T_PL_END     RESET LOCATION COUNTER                01-IARV64
+                        000000B0             948+FREE64TL EQU   *-FREE64T          ++ LENGTH OF PLIST                    01-IARV64
+                                             950+         POP   PRINT                                                    01-IARV64
+                                             951+*                                            IARV64-6
+                        000000B0             953 FREE64_TLEN EQU *-FREE64T
+00000000                                     954          END   MPMCQSTO
+»
+                               Ordinary Symbol and Literal Cross Reference                                     Page   28
+Symbol   Length   Value     Id    R Type Asm  Program   Defn References                     HLASM R6.0  2026/11/10 15.20
+CLASIFY       2 00000234 00000008     H  H               506  315   438
+CL0           2 00000272 00000008     H  H               520  508B
+CL1           2 0000027E 00000008     H  H               524  510B
+CL2           2 0000028A 00000008     H  H               528  512B
+CL3           2 00000296 00000008     H  H               532  514B
+CL4           2 000002A2 00000008     H  H               536  516B
+FREE64_TLEN
+              1 000000B0 00000008 A   U                  953  447   488
+FREE64T       8 00000420 00000008     D  D               789  460   788   939   941   943   945   948   953
+FREE64T_PL_END
+              1 000004D0 00000008     U                  938  947
+FRERET        2 00000228 00000008     H  H               497  433B  445B
+FRE64         2 00000196 00000008     H  H               446  435B
+GET64_TLEN
+              1 000000B0 00000008 A   U                  782  345   400
+GET64T        8 00000370 00000008     D  D               618  358   617   768   770   772   774   777   782
+GET64T_PL_END
+              1 00000420 00000008     U                  767  776
+MPMCQ_NODE
+              1 00000000 FFFFFFFE     J                  127  136   140
+MPMCQ_PAYFREE
+              2 00000154 00000008     H  H               427  304   429   430U
+MPMCQ_PAYGET
+              2 00000000 00000008     H  H               306  303   308   309U
+MPMCQ_QCB
+              1 00000000 FFFFFFFF     J                   77   89    93    97   101   120   125   301U  319   442
+MPMCQSTO      1 00000000 00000008     J                  298  299   300   954
+PAYGOT        2 0000004E 00000008     H  H               334  324B
+PAYOK         2 0000013C 00000008     H  H               415  410B
+PAYRET        2 0000013E 00000008     H  H               417  333B  338B  343B  414B
+PAYZ          2 00000058 00000008     H  H               339  312B
+PAY31_MAX
+              1 00010000 FFFFFFFD A   U                  171  313   434
+PAY64         2 00000062 00000008     H  H               344  314B
+POOL_16K      1 00004000 00000004 A   U                   71  513
+POOL_2K       1 00000800 00000004 A   U                   68  507
+POOL_32K      1 00008000 00000004 A   U                   72  515
+POOL_4K       1 00001000 00000004 A   U                   69  509
+POOL_8K       1 00002000 00000004 A   U                   70  511
+POOLPE        2 0000030A 00000008     H  H               575  551B
+POOLPH        2 000002B4 00000008     H  H               548  557B  570B
+POOLPK        2 00000304 00000008     H  H               571  566B
+POOLPOP       2 000002AE 00000008     H  H               546  321
+POOLPS        2 000002D6 00000008     H  H               558  555B
+POOLPSH       2 00000310 00000008     H  H               582  443
+POOLSH        2 00000316 00000008     H  H               584  593B  605B
+POOLSK        2 00000364 00000008     H  H               606  601B
+POOLSS        2 00000338 00000008     H  H               594  591B
+QCB_POOL      8 00000508 FFFFFFFF     D  D               124  319   442
+R0            1 00000000 00000004 A   U                   22  325M  345M  346M  347M  348   349M  356M  360M  400M  401M  402M  403M
+                                                              447M  448M  449M  450   451M  458M  462M  488M  489M  490M  491M  547M
+                                                              549   554   556M  561   562M  562   563   565M  567M  567   569M  583M
+                                                              587   590   592M  595   596M  596   597   600M  602M  602   604M
+R1            1 00000001 00000004 A   U                   23  310   323M  323   330   335   354   357M  370M  404M  431   456   459M
+                                                              466M  492M  549M  550M  550   552   560   561M  568M  568   569   572M
+»
+                               Ordinary Symbol and Literal Cross Reference                                     Page   29
+Symbol   Length   Value     Id    R Type Asm  Program   Defn References                     HLASM R6.0  2026/11/10 15.20
+                                                              576M  576   587M  588   595M  603M  603   604
+R10           1 0000000A 00000004 A   U                   32  354M  355   356   361   399M  404   421M  456M  457   458   463   487M
+                                                              492
+R11           1 0000000B 00000004 A   U                   33  310M  431M  436   464
+R12           1 0000000C 00000004 A   U                   34  307   308M  309U  421M  425D  428   429M  430U  501M  503D
+R13           1 0000000D 00000004 A   U                   35  307   355   370   399   419   420   421   428   457   466   487   500
+                                                              501
+R14           1 0000000E 00000004 A   U                   36  307   316M  322M  358M  360M  419M  424B  428   439M  444M  460M  462M
+                                                              500M  502B  519B  523B  527B  531B  535B  539B  574B  578B  608B
+R15           1 0000000F 00000004 A   U                   37  315M  316B  320   321M  322B  332M  332   337M  337   342M  342   359M
+                                                              395   413M  416M  416   438M  439B  443M  444B  461M  498M  498   518M
+                                                              522M  526M  530M  534M  538M  573M  573   577M  577   607M  607
+R2            1 00000002 00000004 A   U                   24  301U  319   364M  365   420M  442   501M
+R3            1 00000003 00000004 A   U                   25  317M  319   361M  367   368   369   381   396   440M  442   463M  465
+                                                              477   517M  521M  525M  529M  533M  537M  553M  554   556   560M  572
+                                                              585M  585   586
+R4            1 00000004 00000004 A   U                   26  319M  362M  362   367   369M  391   442M  547   553   565   583   589
+                                                              600
+R5            1 00000005 00000004 A   U                   27  363M  365M  366M  368   395M  409M  409   437M  586   588   599
+R6            1 00000006 00000004 A   U                   28  320M  325   348M  357   359   361   450M  459   461   463
+R7            1 00000007 00000004 A   U                   29  311M  311   313   363   420M  432M  432   434   507   509   511   513
+                                                              515
+R8            1 00000008 00000004 A   U                   30  331M  331   336M  336   340M  340   396M  397   398M  398   411M  411
+                                                              422M  422   436M  437   464M  465   552M  559   563M  564M  565   589M
+                                                              590   592   597M  598M  600
+R9            1 00000009 00000004 A   U                   31  330M  335M  341M  341   397M  412M  412   423M  423   559M  599M
+TLS_LINE      1 00000100 00000004 A   U                   58   59
+TLS_SLOTS
+              1 00000040 00000004 A   U                   57   59    66
+=AL1(99)      1 00000368 00000008     R                  611  382
+»
+                                  Unreferenced Symbols Defined in CSECTs                                       Page   30
+  Defn  Symbol                                                                              HLASM R6.0  2026/11/10 15.20
+   822  FREE64T_KEYUSED_CONVERTSIZE64
+   820  FREE64T_KEYUSED_CONVERTSTART
+   888  FREE64T_KEYUSED_DUMP
+   821  FREE64T_KEYUSED_GUARDSIZE64
+   928  FREE64T_KEYUSED_INORIGIN
+   817  FREE64T_KEYUSED_KEY
+   823  FREE64T_KEYUSED_MOTKN
+   934  FREE64T_KEYUSED_OBJECTTYPE
+   889  FREE64T_KEYUSED_OPTIONVALUE
+   824  FREE64T_KEYUSED_OWNERJOBNAME
+   931  FREE64T_KEYUSED_SENSITIVE
+   890  FREE64T_KEYUSED_SVCDUMPRGN
+   819  FREE64T_KEYUSED_TTOKEN
+   921  FREE64T_KEYUSED_UNITS
+   818  FREE64T_KEYUSED_USERTKN
+   836  FREE64T_XAFFINITY_SYSTEM
+   860  FREE64T_XALETVALUE
+   885  FREE64T_XAMOUNTSIZE_1MEG
+   884  FREE64T_XAMOUNTSIZE_4K
+   891  FREE64T_XATTRIBUTE_DEFS
+   893  FREE64T_XATTRIBUTE_NOTOWNERGONE
+   892  FREE64T_XATTRIBUTE_OWNERGONE
+   830  FREE64T_XCHANGEACCESS_GLOBAL
+   845  FREE64T_XCLEAR_NO
+   826  FREE64T_XCOND_YES
+   828  FREE64T_XCONTROL_AUTH
+   850  FREE64T_XCONVERT_FROMGUARD
+   849  FREE64T_XCONVERT_TOGUARD
+   859  FREE64T_XCONVERTSIZE
+   865  FREE64T_XCONVERTSIZE64
+   864  FREE64T_XCONVERTSTART
+   881  FREE64T_XDETACHFIXED_YES
+   910  FREE64T_XDISCARDPAGES_YES
+   918  FREE64T_XDMAPAGETABLE
+   882  FREE64T_XDOAUTHCHECKS_YES
+   896  FREE64T_XDUMP
+   903  FREE64T_XDUMP_ALL
+   900  FREE64T_XDUMP_LIKECSA
+   902  FREE64T_XDUMP_LIKELSQA
+   901  FREE64T_XDUMP_LIKERGN
+   899  FREE64T_XDUMP_LIKESQA
+   898  FREE64T_XDUMP_NO
+   897  FREE64T_XDUMP_NONE
+   868  FREE64T_XDUMPPRIORITY
+   870  FREE64T_XDUMPPROTOCOL_YES
+   912  FREE64T_XEXECUTABLE_NO
+   911  FREE64T_XEXECUTABLE_YES
+   811  FREE64T_XFLAGS0
+   816  FREE64T_XFLAGS1
+   927  FREE64T_XFLAGS10
+   933  FREE64T_XFLAGS11
+   825  FREE64T_XFLAGS2
+   834  FREE64T_XFLAGS3
+   843  FREE64T_XFLAGS4
+   869  FREE64T_XFLAGS5
+»
+                                  Unreferenced Symbols Defined in CSECTs                                       Page   31
+  Defn  Symbol                                                                              HLASM R6.0  2026/11/10 15.20
+   878  FREE64T_XFLAGS6
+   887  FREE64T_XFLAGS7
+   904  FREE64T_XFLAGS8
+   920  FREE64T_XFLAGS9
+   932  FREE64T_XFORKCOPY_NO
+   827  FREE64T_XFPROT_NO
+   829  FREE64T_XGUARDLOC_HIGH
+   858  FREE64T_XGUARDSIZE
+   866  FREE64T_XGUARDSIZE64
+   946  FREE64T_XINADDR
+   944  FREE64T_XINORIGIN
+   851  FREE64T_XKEEPREAL_NO
+   815  FREE64T_XKEY
+   883  FREE64T_XLOCALSYSAREA_YES
+   844  FREE64T_XLONG_NO
+   814  FREE64T_XMATCH_MOTOKEN
+   835  FREE64T_XMATCH_USERTOKEN
+   886  FREE64T_XMEMLIMIT_COND
+   880  FREE64T_XMEMLIMIT_NO
+   857  FREE64T_XMEMOBJSTART
+   942  FREE64T_XMOTKN
+   813  FREE64T_XMOTKNCREATOR_SYSTEM
+   812  FREE64T_XMOTKNSOURCE_SYSTEM
+   861  FREE64T_XNUMRANGE
+   935  FREE64T_XOBJECTTYPE_POOL
+   936  FREE64T_XOBJECTTYPE_RSMINTERNAL
+   914  FREE64T_XOPTIONVALUE
+   871  FREE64T_XORDER_DUMPPRIORITY
+   855  FREE64T_XORIGIN
+   940  FREE64T_XOUTMOTKN
+   838  FREE64T_XOWNER_NO
+   913  FREE64T_XOWNERASID
+   877  FREE64T_XOWNERCOM_BYASID
+   874  FREE64T_XOWNERCOM_HOME
+   875  FREE64T_XOWNERCOM_PRIMARY
+   876  FREE64T_XOWNERCOM_SYSTEM
+   916  FREE64T_XOWNERJOBNAME
+   833  FREE64T_XPAGEFRAMESIZE_ALL
+   906  FREE64T_XPAGEFRAMESIZE_DREF1MEG
+   832  FREE64T_XPAGEFRAMESIZE_MAX
+   905  FREE64T_XPAGEFRAMESIZE_PAGEABLE1MEG
+   924  FREE64T_XPAGEFRAMESIZE_1M
+   831  FREE64T_XPAGEFRAMESIZE_1MEG
+   925  FREE64T_XPAGEFRAMESIZE_2G
+   856  FREE64T_XRANGLIST
+   791  FREE64T_XREQUEST
+   802  FREE64T_XREQUEST_CHANGEACCESS
+   810  FREE64T_XREQUEST_CHANGEATTRIBUTE
+   804  FREE64T_XREQUEST_CHANGEGUARD
+   807  FREE64T_XREQUEST_COUNTPAGES
+   794  FREE64T_XREQUEST_DETACH
+   798  FREE64T_XREQUEST_DISCARDDATA
+   806  FREE64T_XREQUEST_GETCOMMON
+   793  FREE64T_XREQUEST_GETSHARED
+   792  FREE64T_XREQUEST_GETSTOR
+»
+                                  Unreferenced Symbols Defined in CSECTs                                       Page   32
+  Defn  Symbol                                                                              HLASM R6.0  2026/11/10 15.20
+   805  FREE64T_XREQUEST_LIST
+   795  FREE64T_XREQUEST_PAGEFIX
+   799  FREE64T_XREQUEST_PAGEIN
+   797  FREE64T_XREQUEST_PAGEOUT
+   796  FREE64T_XREQUEST_PAGEUNFIX
+   808  FREE64T_XREQUEST_PCIEFIX
+   809  FREE64T_XREQUEST_PCIEUNFIX
+   800  FREE64T_XREQUEST_PROTECT
+   801  FREE64T_XREQUEST_SHAREMEMOBJ
+   803  FREE64T_XREQUEST_UNPROTECT
+   915  FREE64T_XRSV0001
+   917  FREE64T_XRSV0004
+   937  FREE64T_XRSV0005
+   908  FREE64T_XSADMP_NO
+   907  FREE64T_XSADMP_YES
+   852  FREE64T_XSEGMENTS
+   930  FREE64T_XSENSITIVE_NO
+   929  FREE64T_XSENSITIVE_YES
+   842  FREE64T_XSVCDUMPRGN_ALL
+   840  FREE64T_XSVCDUMPRGN_NO
+   894  FREE64T_XTRACKINFO_YES
+   853  FREE64T_XTTOKEN
+   873  FREE64T_XTYPE_DREF
+   926  FREE64T_XTYPE_FIXED
+   872  FREE64T_XTYPE_PAGEABLE
+   919  FREE64T_XUNITS
+   922  FREE64T_XUNITSIZE_1M
+   923  FREE64T_XUNITSIZE_2G
+   895  FREE64T_XUNLOCKED_YES
+   854  FREE64T_XUSERTKN
+   867  FREE64T_XUSERTOKEN
+   837  FREE64T_XUSE2GTO32G_YES
+   909  FREE64T_XUSE2GTO64G_YES
+   790  FREE64T_XVERSION
+   848  FREE64T_XVIEW_HIDDEN
+   846  FREE64T_XVIEW_READONLY
+   847  FREE64T_XVIEW_SHAREDWRITE
+   879  FREE64T_XV64COMMON_NO
+   863  FREE64T_XV64LISTLENGTH
+   862  FREE64T_XV64LISTPTR
+   839  FREE64T_XV64SELECT_NO
+   841  FREE64T_XV64SHARED_NO
+   948  FREE64TL
+   651  GET64T_KEYUSED_CONVERTSIZE64
+   649  GET64T_KEYUSED_CONVERTSTART
+   717  GET64T_KEYUSED_DUMP
+   650  GET64T_KEYUSED_GUARDSIZE64
+   757  GET64T_KEYUSED_INORIGIN
+   646  GET64T_KEYUSED_KEY
+   652  GET64T_KEYUSED_MOTKN
+   763  GET64T_KEYUSED_OBJECTTYPE
+   718  GET64T_KEYUSED_OPTIONVALUE
+   653  GET64T_KEYUSED_OWNERJOBNAME
+   760  GET64T_KEYUSED_SENSITIVE
+   719  GET64T_KEYUSED_SVCDUMPRGN
+»
+                                  Unreferenced Symbols Defined in CSECTs                                       Page   33
+  Defn  Symbol                                                                              HLASM R6.0  2026/11/10 15.20
+   648  GET64T_KEYUSED_TTOKEN
+   750  GET64T_KEYUSED_UNITS
+   647  GET64T_KEYUSED_USERTKN
+   665  GET64T_XAFFINITY_SYSTEM
+   689  GET64T_XALETVALUE
+   714  GET64T_XAMOUNTSIZE_1MEG
+   713  GET64T_XAMOUNTSIZE_4K
+   720  GET64T_XATTRIBUTE_DEFS
+   722  GET64T_XATTRIBUTE_NOTOWNERGONE
+   721  GET64T_XATTRIBUTE_OWNERGONE
+   659  GET64T_XCHANGEACCESS_GLOBAL
+   674  GET64T_XCLEAR_NO
+   655  GET64T_XCOND_YES
+   657  GET64T_XCONTROL_AUTH
+   679  GET64T_XCONVERT_FROMGUARD
+   678  GET64T_XCONVERT_TOGUARD
+   688  GET64T_XCONVERTSIZE
+   694  GET64T_XCONVERTSIZE64
+   693  GET64T_XCONVERTSTART
+   710  GET64T_XDETACHFIXED_YES
+   739  GET64T_XDISCARDPAGES_YES
+   747  GET64T_XDMAPAGETABLE
+   711  GET64T_XDOAUTHCHECKS_YES
+   725  GET64T_XDUMP
+   732  GET64T_XDUMP_ALL
+   729  GET64T_XDUMP_LIKECSA
+   731  GET64T_XDUMP_LIKELSQA
+   730  GET64T_XDUMP_LIKERGN
+   728  GET64T_XDUMP_LIKESQA
+   727  GET64T_XDUMP_NO
+   726  GET64T_XDUMP_NONE
+   697  GET64T_XDUMPPRIORITY
+   699  GET64T_XDUMPPROTOCOL_YES
+   741  GET64T_XEXECUTABLE_NO
+   740  GET64T_XEXECUTABLE_YES
+   640  GET64T_XFLAGS0
+   645  GET64T_XFLAGS1
+   756  GET64T_XFLAGS10
+   762  GET64T_XFLAGS11
+   654  GET64T_XFLAGS2
+   663  GET64T_XFLAGS3
+   672  GET64T_XFLAGS4
+   698  GET64T_XFLAGS5
+   707  GET64T_XFLAGS6
+   716  GET64T_XFLAGS7
+   733  GET64T_XFLAGS8
+   749  GET64T_XFLAGS9
+   761  GET64T_XFORKCOPY_NO
+   656  GET64T_XFPROT_NO
+   658  GET64T_XGUARDLOC_HIGH
+   687  GET64T_XGUARDSIZE
+   695  GET64T_XGUARDSIZE64
+   775  GET64T_XINADDR
+   773  GET64T_XINORIGIN
+   680  GET64T_XKEEPREAL_NO
+»
+                                  Unreferenced Symbols Defined in CSECTs                                       Page   34
+  Defn  Symbol                                                                              HLASM R6.0  2026/11/10 15.20
+   644  GET64T_XKEY
+   712  GET64T_XLOCALSYSAREA_YES
+   673  GET64T_XLONG_NO
+   643  GET64T_XMATCH_MOTOKEN
+   664  GET64T_XMATCH_USERTOKEN
+   715  GET64T_XMEMLIMIT_COND
+   709  GET64T_XMEMLIMIT_NO
+   686  GET64T_XMEMOBJSTART
+   771  GET64T_XMOTKN
+   642  GET64T_XMOTKNCREATOR_SYSTEM
+   641  GET64T_XMOTKNSOURCE_SYSTEM
+   690  GET64T_XNUMRANGE
+   764  GET64T_XOBJECTTYPE_POOL
+   765  GET64T_XOBJECTTYPE_RSMINTERNAL
+   743  GET64T_XOPTIONVALUE
+   700  GET64T_XORDER_DUMPPRIORITY
+   684  GET64T_XORIGIN
+   769  GET64T_XOUTMOTKN
+   667  GET64T_XOWNER_NO
+   742  GET64T_XOWNERASID
+   706  GET64T_XOWNERCOM_BYASID
+   703  GET64T_XOWNERCOM_HOME
+   704  GET64T_XOWNERCOM_PRIMARY
+   705  GET64T_XOWNERCOM_SYSTEM
+   745  GET64T_XOWNERJOBNAME
+   662  GET64T_XPAGEFRAMESIZE_ALL
+   735  GET64T_XPAGEFRAMESIZE_DREF1MEG
+   661  GET64T_XPAGEFRAMESIZE_MAX
+   734  GET64T_XPAGEFRAMESIZE_PAGEABLE1MEG
+   753  GET64T_XPAGEFRAMESIZE_1M
+   660  GET64T_XPAGEFRAMESIZE_1MEG
+   754  GET64T_XPAGEFRAMESIZE_2G
+   685  GET64T_XRANGLIST
+   620  GET64T_XREQUEST
+   631  GET64T_XREQUEST_CHANGEACCESS
+   639  GET64T_XREQUEST_CHANGEATTRIBUTE
+   633  GET64T_XREQUEST_CHANGEGUARD
+   636  GET64T_XREQUEST_COUNTPAGES
+   623  GET64T_XREQUEST_DETACH
+   627  GET64T_XREQUEST_DISCARDDATA
+   635  GET64T_XREQUEST_GETCOMMON
+   622  GET64T_XREQUEST_GETSHARED
+   621  GET64T_XREQUEST_GETSTOR
+   634  GET64T_XREQUEST_LIST
+   624  GET64T_XREQUEST_PAGEFIX
+   628  GET64T_XREQUEST_PAGEIN
+   626  GET64T_XREQUEST_PAGEOUT
+   625  GET64T_XREQUEST_PAGEUNFIX
+   637  GET64T_XREQUEST_PCIEFIX
+   638  GET64T_XREQUEST_PCIEUNFIX
+   629  GET64T_XREQUEST_PROTECT
+   630  GET64T_XREQUEST_SHAREMEMOBJ
+   632  GET64T_XREQUEST_UNPROTECT
+   744  GET64T_XRSV0001
+   746  GET64T_XRSV0004
+»
+                                  Unreferenced Symbols Defined in CSECTs                                       Page   35
+  Defn  Symbol                                                                              HLASM R6.0  2026/11/10 15.20
+   766  GET64T_XRSV0005
+   737  GET64T_XSADMP_NO
+   736  GET64T_XSADMP_YES
+   681  GET64T_XSEGMENTS
+   759  GET64T_XSENSITIVE_NO
+   758  GET64T_XSENSITIVE_YES
+   671  GET64T_XSVCDUMPRGN_ALL
+   669  GET64T_XSVCDUMPRGN_NO
+   723  GET64T_XTRACKINFO_YES
+   682  GET64T_XTTOKEN
+   702  GET64T_XTYPE_DREF
+   755  GET64T_XTYPE_FIXED
+   701  GET64T_XTYPE_PAGEABLE
+   748  GET64T_XUNITS
+   751  GET64T_XUNITSIZE_1M
+   752  GET64T_XUNITSIZE_2G
+   724  GET64T_XUNLOCKED_YES
+   683  GET64T_XUSERTKN
+   696  GET64T_XUSERTOKEN
+   666  GET64T_XUSE2GTO32G_YES
+   738  GET64T_XUSE2GTO64G_YES
+   619  GET64T_XVERSION
+   677  GET64T_XVIEW_HIDDEN
+   675  GET64T_XVIEW_READONLY
+   676  GET64T_XVIEW_SHAREDWRITE
+   708  GET64T_XV64COMMON_NO
+   692  GET64T_XV64LISTLENGTH
+   691  GET64T_XV64LISTPTR
+   668  GET64T_XV64SELECT_NO
+   670  GET64T_XV64SHARED_NO
+   777  GET64TL
+    75  MPMCQ_STATS_VERSION
+   374  M00M0005
+   470  M00M0011
+   617  M00M0015
+   788  M00M0016
+    67  POOL_N
+    73  POOL_64K
+    56  PSATOLD
+    39  SAVL
+    59  TLS_BYTES
+    63  TLS_COUNT
+    60  TLS_DEPTH
+    61  TLS_FILL
+    66  TLS_MASK
+    65  TLS_NODES
+    62  TLS_OWNER
+    64  TLS_STAMP
+»
+                                          Macro and Copy Code Source Summary                                   Page   36
+ Con Source                                        Volume    Members                        HLASM R6.0  2026/11/10 15.20
+     PRIMARY INPUT                                           QENTER   QLEAF    QLEAVE   QLEAVER  QLEAVER89
+                                                             QLEAVE89
+  L1 Z72675.QUEUE.MAC                              ZXPC02    API      DSECTS   LINKAGE  REGS
+  L2 SYS1.MACLIB                                   VTMVSC    FREEMAIN GETMAIN  IARV64   SYSSTATE
+»
+                                                Dsect Cross Reference                                          Page   37
+Dsect     Length      Id       Defn                                                         HLASM R6.0  2026/11/10 15.20
+MPMCQ_CB_PLIST
+         0000000C  FFFFFFF7     213
+MPMCQ_NODE
+         00000500  FFFFFFFE     127
+MPMCQ_QCB
+         00000538  FFFFFFFF      77
+MPMCQ_QDEQ_PLIST
+         00000010  FFFFFFFA     199
+MPMCQ_QENQ_PLIST
+         0000000C  FFFFFFFB     194
+MPMCQ_QINIT_PLIST
+         00000018  FFFFFFFC     186
+MPMCQ_QSTATS_PLIST
+         0000000C  FFFFFFF9     205
+MPMCQ_STATS
+         00000050  FFFFFFFD     142
+MPMCQ_STOP_PL
+         00000004  FFFFFFF8     210
+»
+                                                      Using Map                                                Page   38
+                                                                                            HLASM R6.0  2026/11/10 15.20
+  Stmt  -----Location----- Action ----------------Using----------------- Reg Max     Last Label and Using Text
+          Count      Id           Type          Value    Range     Id        Disp    Stmt
+   301  00000000  00000008 USING  ORDINARY    00000000 00001000 FFFFFFFF   2 00000        MPMCQ_QCB,R2
+   309  0000000A  00000008 USING  ORDINARY    00000000 00001000 00000008  12 00368    382 MPMCQ_PAYGET,R12
+   425  00000154  00000008 DROP                                           12              R12
+   430  0000015E  00000008 USING  ORDINARY    00000154 00001000 00000008  12 0005C    454 MPMCQ_PAYFREE,R12
+   503  00000234  00000008 DROP                                           12              R12
+»
+                                   General Purpose Register Cross Reference                                    Page   39
+ Register  References (M=modified, B=branch, U=USING, D=DROP, N=index)                      HLASM R6.0  2026/11/10 15.20
+    0(0)     307   325M  345M  346M  347M  348   349M  356M  360M  400M  401M  402M  403M  428   447M  448M  449M  450   451M  458M
+             462M  488M  489M  490M  491M  547M  549   554   556M  561   562M  562   563   565M  567M  567   569M  583M  587   590
+             592M  595   596M  596   597   600M  602M  602   604M
+    1(1)     307   310   323M  323   328M  330   335   352M  354   357M  360M  370M  377   377   378   379   380   381   382   383
+             384   391   404M  407M  407   428   431   454M  456   459M  462M  466M  473   473   474   475   476   477   492M  495M
+             495   549M  550M  550   552N  560   561M  565M  568M  568   569   572M  576M  576   587M  588   595M  600M  603M  603
+             604
+    2(2)     301U  307   319   364M  365   420M  428   442   501M
+    3(3)     307   317M  319N  361M  367N  368N  369N  381   390M  396N  420M  428   440M  442N  463M  465N  477   483M  501M  517M
+             521M  525M  529M  533M  537M  553M  554   556   560M  572   585M  585   586
+    4(4)     307   319M  362M  362   367   369M  390M  391   420M  428   442M  483M  501M  547N  553N  565   583N  589N  600
+    5(5)     307   363M  365M  366M  368   395M  409M  409   420M  428   437M  501M  586N  588N  599
+    6(6)     307   320M  325   348M  357   359   361N  420M  428   450M  459   461   463N  501M
+    7(7)     307   311M  311   313   363   420M  428   432M  432   434   501M  507   509   511   513   515
+    8(8)     307   331M  331   336M  336   340M  340   396M  397   398M  398   411M  411   422M  422   428   436M  437   464M  465
+             501M  552M  559   563M  564M  565   589M  590   592   597M  598M  600
+    9(9)     307   330M  335M  341M  341   397M  412M  412   423M  423   428   501M  559M  565   599M  600
+   10(A)     307   354M  355   356   361   399M  404   421M  428   456M  457   458   463   487M  492   501M
+   11(B)     307   310M  421M  428   431M  436N  464N  501M
+   12(C)     307   308M  309U  421M  425D  428   429M  430U  501M  503D
+   13(D)     307   355N  370N  399N  419N  420   421   428   457N  466N  487N  500N  501
+   14(E)     307   316M  322M  358M  360M  385M  386M  386N  387M  387N  389M  390   390M  419M  424B  428   439M  444M  460M  462M
+             478M  479M  479N  480M  480N  482M  483   483M  500M  502B  519B  523B  527B  531B  535B  539B  574B  578B  608B
+   15(F)     307   315M  316B  320   321M  322B  332M  332   337M  337   342M  342   359M  360M  388M  389   395   413M  416M  416
+             428   438M  439B  443M  444B  461M  462M  481M  482   498M  498   518M  522M  526M  530M  534M  538M  573M  573   577M
+             577   607M  607
+»
+                                  Diagnostic Cross Reference and Assembler Summary                             Page   40
+                                                                                            HLASM R6.0  2026/11/10 15.20
+     No Statements Flagged in this Assembly
+HIGH LEVEL ASSEMBLER, 5696-234, RELEASE 6.0, PTF UO07449
+SYSTEM: z/OS 03.01.00              JOBNAME: MPMCQ       STEPNAME: ASMSTO     PROCSTEP: (NOPROC)
+Unicode Module:   ASMA047C   From Page     1148   To Page    17584           ECECP: International 1
+Data Sets Allocated for this Assembly
+ Con DDname   Data Set Name                                Volume  Member
+  P1 SYSIN    Z72675.QUEUE.ASM                             ZXPC02  MPMCQSTO
+  L1 SYSLIB   Z72675.QUEUE.MAC                             ZXPC02
+  L2          SYS1.MACLIB                                  VTMVSC
+  L3          SYS1.MODGEN                                  VTMVSC
+     SYSLIN   Z72675.QUEUE.OBJ                             ZXPC02  MPMCQSTO
+     SYSPRINT Z72675.MPMCQ.JOB08338.D0000104.?
+
+  26824K allocated to Buffer Pool       Storage required    3428K
+    277 Primary Input Records Read        39556 Library Records Read                  0 Work File Reads
+      0 ASMAOPT Records Read               1776 Primary Print Records Written         0 Work File Writes
+     28 Object Records Written                0 ADATA Records Written
+Assembly Start Time: 15.20.46 Stop Time: 15.20.46 Processor Time: 00.00.00.0227
+Return Code 002
